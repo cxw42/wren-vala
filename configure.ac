@@ -4,6 +4,7 @@ dnl Copyright (c) 2021 Christopher White
 dnl SPDX-License-Identifier: MIT
 
 dnl === Basic setup =======================================================
+
 AC_INIT([Vala bindings for Wren], [0.4.0], [], [wren-vala], [https://github.com/cxw42/wren-vala])
 AC_PREREQ([2.65])
 AC_COPYRIGHT([Copyright (C) 2020 Christopher White])
@@ -22,7 +23,6 @@ dnl to src/myconfig.vapi as well.
 dnl AC_CONFIG_HEADER([config.h])
 
 AC_PROG_CC
-AC_PROG_CXX
 
 AM_PROG_VALAC
 dnl Known to work with valac 0.40.19
@@ -33,6 +33,13 @@ AC_ARG_VAR([USER_VALAFLAGS], [extra options for valac(1)])
 
 AC_PROG_RANLIB
 
+dnl === Check for Wren ====================================================
+
+AC_CHECK_HEADERS([wren.h], [break], [AC_MSG_ERROR([Could not find wren.h])])
+AC_SEARCH_LIBS([wrenNewVM], [wren],
+  [], [AC_MSG_ERROR([Could not find -lwren])],
+  [-lm]
+)
 dnl === Code coverage =====================================================
 
 dnl For some reason, the coverage data is referring to src/.../glib-2.0.vapi.
