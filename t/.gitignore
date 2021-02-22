@@ -1,0 +1,10 @@
+# Test output
+*.trs
+*.log
+
+# Test executables
+*-t
+
+# Generated files
+*.c
+*.h

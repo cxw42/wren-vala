@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -xEeuo pipefail
+
+includes=(-I m4 -I m4-bundled)
+
+mkdir -p m4
+# || in case of "too many loops" errors
+aclocal "${includes[@]}" --install || aclocal "${includes[@]}" --install
+autoreconf -f -i "${includes[@]}" || autoreconf -f -i "${includes[@]}"
