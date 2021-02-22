@@ -5,9 +5,11 @@ dnl SPDX-License-Identifier: MIT
 
 dnl === Basic setup =======================================================
 
-AC_INIT([Vala bindings for Wren], [0.4.0], [], [wren-vala], [https://github.com/cxw42/wren-vala])
+AC_INIT([Vala bindings for Wren],
+  [0.4.0], dnl The version number matches the version of Wren
+  [], [wren-vala], [https://github.com/cxw42/wren-vala])
 AC_PREREQ([2.65])
-AC_COPYRIGHT([Copyright (C) 2020 Christopher White])
+AC_COPYRIGHT([Copyright (C) 2021 Christopher White])
 
 AC_MSG_NOTICE([Configuring $PACKAGE_STRING])
 
@@ -16,7 +18,7 @@ AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_MACRO_DIR([m4-bundled])
 
-AM_INIT_AUTOMAKE([1.13.2 foreign subdir-objects])
+AM_INIT_AUTOMAKE([1.13.2 foreign subdir-objects])   dnl 1.13.2+ for better Vala support
 
 dnl NOTE: If you add any variables to config.h, make sure to add them
 dnl to src/myconfig.vapi as well.
@@ -33,13 +35,22 @@ AC_ARG_VAR([USER_VALAFLAGS], [extra options for valac(1)])
 
 AC_PROG_RANLIB
 
+PKG_PROG_PKG_CONFIG([0.24])
+
 dnl === Check for Wren ====================================================
+dnl Don't use pkg-config since Wren itself does not provide a .pc file.
 
 AC_CHECK_HEADERS([wren.h], [break], [AC_MSG_ERROR([Could not find wren.h])])
 AC_SEARCH_LIBS([wrenNewVM], [wren],
   [], [AC_MSG_ERROR([Could not find -lwren])],
   [-lm]
 )
+
+dnl === pkg-config file ===================================================
+
+PKG_INSTALLDIR
+AC_SUBST([pc_name], [libwren-$PACKAGE_VERSION])
+
 dnl === Code coverage =====================================================
 
 dnl For some reason, the coverage data is referring to src/.../glib-2.0.vapi.
@@ -68,11 +79,10 @@ AM_COND_IF(
 
 dnl === Dependencies ======================================================
 
-PKG_PROG_PKG_CONFIG([0.24])
-
 dnl glib: 2.38+ for g_test_build_filename()
-PKG_CHECK_MODULES([BASE],[
-    gee-0.8
+dnl All deps are private so that the .pc file can be used for other languages
+dnl than just vala.
+AX_PKG_CHECK_MODULES([BASE], [], [
     gobject-2.0
     gio-2.0
     glib-2.0 >= 2.38
@@ -105,10 +115,15 @@ dnl === Output ============================================================
 
 AC_CONFIG_FILES([
     Makefile
+    src/Makefile
     t/Makefile
 ])
     dnl doc/Makefile
-    dnl src/Makefile
+
+dnl pkg-config file: name it after the Wren version
+AC_CONFIG_FILES([src/"$pc_name".pc:src/libwren.pc.in], [],
+  [pc_name="$pc_name"]
+)
 
 AM_SILENT_RULES([yes])
 AC_OUTPUT

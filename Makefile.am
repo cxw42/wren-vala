@@ -5,4 +5,4 @@
 
 include $(top_srcdir)/rules.mk
 
-SUBDIRS = t
+SUBDIRS = src t
