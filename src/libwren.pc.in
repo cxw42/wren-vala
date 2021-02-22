@@ -1,6 +1,5 @@
 # @configure_input@
-# Thanks to
-# <https://tecnocode.co.uk/2014/12/09/a-checklist-for-writing-pkg-config-files/>
+# pkg-config file for Wren itself.  Wren does not ship a pkg-config file.
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@
@@ -8,11 +7,10 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: Wren
-Description: Wren scripting language (pkg-config file and Vala bindings)
+Description: Wren scripting language
 Version: @PACKAGE_VERSION@
 Libs: -L${libdir} -lwren -lm
 Cflags: -I${includedir}
-Requires: @AX_PACKAGE_REQUIRES@
-Requires.private: @AX_PACKAGE_REQUIRES_PRIVATE@
+# No Requires or Requires.private
 
 # vi: set ft=config: #

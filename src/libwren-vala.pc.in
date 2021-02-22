@@ -1,0 +1,19 @@
+# @configure_input@
+# pkg-config file for the Vala bindings of Wren.
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: @PACKAGE_TARNAME@
+Description: @PACKAGE_NAME@
+Version: @PACKAGE_VERSION@
+
+Requires: libwren-@PACKAGE_VERSION@ @AX_PACKAGE_REQUIRES@
+Requires.private: @AX_PACKAGE_REQUIRES_PRIVATE@
+
+Libs: -L${libdir} -l@PACKAGE_TARNAME@
+Cflags: -I${includedir}
+
+# vi: set ft=config: #

@@ -6,3 +6,9 @@
 include $(top_srcdir)/rules.mk
 
 SUBDIRS = src t
+
+EXTRA_DIST = \
+	bootstrap \
+	tap-driver.sh \
+	tap-test \
+	$(EOL)

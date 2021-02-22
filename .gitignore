@@ -84,6 +84,8 @@ conf*.dir/
 /configure
 .deps/
 .dirstamp
+.libs/
+/libtool
 /m4/
 Makefile.in
 stamp-*

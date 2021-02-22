@@ -8,6 +8,12 @@ dnl === Basic setup =======================================================
 AC_INIT([Vala bindings for Wren],
   [0.4.0], dnl The version number matches the version of Wren
   [], [wren-vala], [https://github.com/cxw42/wren-vala])
+
+dnl ***************************************************************************
+dnl *** whenever you change the version number, also update the header-file ***
+dnl *** name throughout src/vm.vala.                                        ***
+dnl ***************************************************************************
+
 AC_PREREQ([2.65])
 AC_COPYRIGHT([Copyright (C) 2021 Christopher White])
 
@@ -23,6 +29,8 @@ AM_INIT_AUTOMAKE([1.13.2 foreign subdir-objects])   dnl 1.13.2+ for better Vala 
 dnl NOTE: If you add any variables to config.h, make sure to add them
 dnl to src/myconfig.vapi as well.
 dnl AC_CONFIG_HEADER([config.h])
+
+LT_INIT
 
 AC_PROG_CC
 
@@ -48,8 +56,11 @@ AC_SEARCH_LIBS([wrenNewVM], [wren],
 
 dnl === pkg-config file ===================================================
 
+dnl Thanks for boilerplate and tips to
+dnl https://tecnocode.co.uk/2014/12/09/a-checklist-for-writing-pkg-config-files/
+
 PKG_INSTALLDIR
-AC_SUBST([pc_name], [libwren-$PACKAGE_VERSION])
+AC_SUBST([APIVER], [$PACKAGE_VERSION])  dnl Just to reduce typing :)
 
 dnl === Code coverage =====================================================
 
@@ -120,10 +131,9 @@ AC_CONFIG_FILES([
 ])
     dnl doc/Makefile
 
-dnl pkg-config file: name it after the Wren version
-AC_CONFIG_FILES([src/"$pc_name".pc:src/libwren.pc.in], [],
-  [pc_name="$pc_name"]
-)
+dnl pkg-config files: name them after the Wren version
+AC_CONFIG_FILES([src/libwren-"$APIVER".pc:src/libwren.pc.in], [], [APIVER="$APIVER"])
+AC_CONFIG_FILES([src/libwren-vala-"$APIVER".pc:src/libwren-vala.pc.in], [], [APIVER="$APIVER"])
 
 AM_SILENT_RULES([yes])
 AC_OUTPUT

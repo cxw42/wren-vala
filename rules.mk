@@ -3,6 +3,11 @@
 # for convenience at the ends of lists
 EOL =
 
+# Locations
+
+# From https://tecnocode.co.uk/2013/12/14/notes-on-vala-and-automake/
+vapidir = $(datadir)/vala/vapi
+
 # For code coverage, per
 # https://www.gnu.org/software/autoconf-archive/ax_code_coverage.html
 clean-local: code-coverage-clean
