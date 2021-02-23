@@ -96,6 +96,13 @@ namespace Wren {
     size_t minHeapSize;
     int heapGrowthPercent;
     void *userData;
+
+    public static Configuration default ()
+    {
+      var retval = Configuration();
+      InitConfiguration(ref retval);
+      return retval;
+    }
   }
 
   [CCode(cprefix="WREN_RESULT_", has_type_id = "false")]
