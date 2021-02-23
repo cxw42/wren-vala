@@ -53,7 +53,7 @@ namespace Wren {
   [CCode(cheader_filename = "libwren-vala-0.4.0.h,wren.h")]
   public class VMV : VM
   {
-    public VMV(Configuration? config)
+    public VMV(Configuration? config = null)
     {
       base(config);
     }

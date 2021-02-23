@@ -124,7 +124,7 @@ namespace Wren {
   {
     /** Constructor */
     [CCode(cname = "wrenNewVM")]
-    public extern VM(Configuration? config);
+    public extern VM(Configuration? config = null);
 
     public extern void CollectGarbage();
 
