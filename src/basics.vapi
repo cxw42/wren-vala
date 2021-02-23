@@ -53,9 +53,9 @@ namespace Wren {
 
   [CCode(has_target = false)]
   public delegate ForeignMethodFn BindForeignMethodFn(VM vm, string module,
-                                                      string className,
-                                                      bool isStatic,
-                                                      string signature);
+    string className,
+    bool isStatic,
+    string signature);
 
   [CCode(has_target = false)]
   public delegate void WriteFn(VM vm, string text);
@@ -70,7 +70,7 @@ namespace Wren {
 
   [CCode(has_target = false)]
   public delegate void ErrorFn(VM vm, ErrorType type, string module,
-                               int line, string message);
+    int line, string message);
 
   public struct ForeignClassMethods
   {
@@ -118,7 +118,7 @@ namespace Wren {
    * This class includes all functions taking a WrenVM as the first parameter.
    */
   [CCode(cheader_filename = "wren.h", free_function = "wrenFreeVM",
-         has_type_id = false, cprefix="wren", lower_case_cprefix="wren")]
+    has_type_id = false, cprefix="wren", lower_case_cprefix="wren")]
   [Compact]
   public class VM
   {
@@ -185,6 +185,6 @@ namespace Wren {
 
     public extern void *GetUserData();
     public extern void SetUserData(void *userData);
-  } //class VM
+  } // class VM
 
-} //namespace Wren
+} // namespace Wren

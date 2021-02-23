@@ -51,7 +51,7 @@ namespace Wren {
    * equivalents of all the {@link Wren.Handle} functions.
    */
   [CCode(cheader_filename = "libwren-vala-0.4.0.h,wren.h")]
-  public class VMV: VM
+  public class VMV : VM
   {
     public VMV(Configuration? config)
     {
@@ -80,4 +80,4 @@ namespace Wren {
     }
 
   } // class VMV
-} //namespace Wren
+} // namespace Wren

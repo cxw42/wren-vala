@@ -7,8 +7,8 @@ void test_sanity()
 
 public static int main (string[] args)
 {
-    Test.init (ref args);
-    Test.set_nonfatal_assertions();
-    Test.add_func("/000-sanity/sanity", test_sanity);
-    return Test.run();
+  Test.init (ref args);
+  Test.set_nonfatal_assertions();
+  Test.add_func("/000-sanity/sanity", test_sanity);
+  return Test.run();
 }
