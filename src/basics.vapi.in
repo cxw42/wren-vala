@@ -1,5 +1,8 @@
+// @configure_input@
+
 // basics.vapi: Vala bindings for Wren.
-// See wren.h for documentation.  This file is in the same order as wren.h.
+// See @WREN_HEADER@ for documentation.  This file is in the same order as
+// wren.h, as of writing.
 // See vm.vala for convenience classes Wren.HandleAuto and Wren.VMV.
 //
 // By Christopher White <cxwembedded@gmail.com>
@@ -7,7 +10,7 @@
 //
 // TODO: check the ownership on Handle instances.
 
-[CCode(cheader_filename = "wren.h", lower_case_cprefix="wren")]
+[CCode(cheader_filename = "@WREN_HEADER@", lower_case_cprefix="wren")]
 namespace Wren {
 
   [CCode(cname="WREN_VERSION_MAJOR")]
@@ -124,7 +127,7 @@ namespace Wren {
    *
    * This class includes all functions taking a WrenVM as the first parameter.
    */
-  [CCode(cheader_filename = "wren.h", free_function = "wrenFreeVM",
+  [CCode(cheader_filename = "@WREN_HEADER@", free_function = "wrenFreeVM",
     has_type_id = false, cprefix="wren", lower_case_cprefix="wren")]
   [Compact]
   public class VM

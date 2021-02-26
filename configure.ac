@@ -11,11 +11,6 @@ AC_INIT([Vala bindings for Wren],
   [https://github.com/cxw42/wren-vala/issues], [wren-vala],
   [https://github.com/cxw42/wren-vala])
 
-dnl ***************************************************************************
-dnl *** whenever you change the version number, also update the header-file ***
-dnl *** name throughout src/vm.vala.                                        ***
-dnl ***************************************************************************
-
 AC_PREREQ([2.65])
 AC_COPYRIGHT([Copyright (C) 2021 Christopher White])
 
@@ -176,6 +171,8 @@ dnl === Output ============================================================
 AC_CONFIG_FILES([
     Makefile
     src/Makefile
+    src/basics.vapi
+    src/vm.vala
     t/Makefile
     wren-pkg/Makefile
 ])

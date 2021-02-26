@@ -2,6 +2,11 @@
 
 # Installing
 
+## Requirements
+
+- `valac`
+- autotools (those are probably already installed)
+
 ## From a dist tarball
 
   tar xvzf wren-vala-VERSION.tar.gz
