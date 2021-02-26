@@ -3,6 +3,10 @@
 # for convenience at the ends of lists
 EOL =
 
+# A convenient place to hold phony targets
+.PHONY: $(phony)
+phony =
+
 # Locations
 
 # From https://tecnocode.co.uk/2013/12/14/notes-on-vala-and-automake/

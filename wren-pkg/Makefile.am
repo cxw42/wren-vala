@@ -5,12 +5,19 @@
 
 include $(top_srcdir)/rules.mk
 
-# Headers
+include_HEADERS =
+lib_LTLIBRARIES =
 
-include_HEADERS = \
+# === Headers ===========================================================
+
+if WREN_INSTALL
+
+include_HEADERS += \
 	wren-@APIVER@.h \
 	wren-@APIVER@.hpp \
 	$(EOL)
+
+endif
 
 wren-@APIVER@.h: wren/src/include/wren.h
 	cp "$<" "$@"
@@ -23,16 +30,18 @@ CLEANFILES = \
 	wren-@APIVER@.hpp \
 	$(EOL)
 
-# Libraries.  For simplicity, just build the .so.
+# === Libraries =========================================================
 # Do include all the optional features.
 
-lib_LTLIBRARIES = \
+if WREN_INSTALL
+lib_LTLIBRARIES += \
 	libwren-@APIVER@.la \
 	$(EOL)
+endif
 
 libwren_@APIVER@_la_CFLAGS = \
 	-I$(srcdir)/wren/src/vm -I$(srcdir)/wren/src/optional \
-	-I$(srcdir)/wren/src/optional
+	-I$(srcdir)/wren/src/include \
 	$(AM_CFLAGS) \
 	$(EOL)
 

@@ -1,6 +1,8 @@
 include $(top_srcdir)/rules.mk
 include $(top_srcdir)/glib-tap.mk
 
+test_programs =
+
 # So we don't have to list the sources of every test program individually
 AM_DEFAULT_SOURCE_EXT = .vala
 # But that messes up the linker selection, so:
@@ -26,7 +28,9 @@ LDADD = \
 	$(BASE_LIBS) \
 	$(EOL)
 
-test_programs = \
+if !WREN_INSTALL
+test_programs += \
 	000-sanity-t \
 	100-vmv-t \
 	$(EOL)
+endif
