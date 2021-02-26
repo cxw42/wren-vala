@@ -5,9 +5,11 @@ dnl SPDX-License-Identifier: MIT
 
 dnl === Basic setup =======================================================
 
+dnl Note: the version number of this package matches the version of Wren.
 AC_INIT([Vala bindings for Wren],
-  [0.4.0], dnl The version number matches the version of Wren
-  [], [wren-vala], [https://github.com/cxw42/wren-vala])
+  [0.4.0],
+  [https://github.com/cxw42/wren-vala/issues], [wren-vala],
+  [https://github.com/cxw42/wren-vala])
 
 dnl ***************************************************************************
 dnl *** whenever you change the version number, also update the header-file ***
@@ -41,26 +43,60 @@ dnl TODO remove USER_VALAFLAGS once I figure out why regular VALAFLAGS
 dnl isn't being passed through.
 AC_ARG_VAR([USER_VALAFLAGS], [extra options for valac(1)])
 
-AC_PROG_RANLIB
-
 PKG_PROG_PKG_CONFIG([0.24])
 
-dnl === Check for Wren ====================================================
-dnl Don't use pkg-config since Wren itself does not provide a .pc file.
-
-AC_CHECK_HEADERS([wren.h], [break], [AC_MSG_ERROR([Could not find wren.h])])
-AC_SEARCH_LIBS([wrenNewVM], [wren],
-  [], [AC_MSG_ERROR([Could not find -lwren])],
-  [-lm]
-)
-
-dnl === pkg-config file ===================================================
+dnl === pkg-config file for wren-vala =====================================
 
 dnl Thanks for boilerplate and tips to
 dnl https://tecnocode.co.uk/2014/12/09/a-checklist-for-writing-pkg-config-files/
 
 PKG_INSTALLDIR
 AC_SUBST([APIVER], [$PACKAGE_VERSION])  dnl Just to reduce typing :)
+AC_SUBST([APIVERSH], [AS_TR_SH([$PACKAGE_VERSION])])
+
+dnl === Installing Wren from wren-pkg/ ====================================
+
+AC_ARG_ENABLE([wren-install],
+  AS_HELP_STRING([--enable-wren-install], [Build and install Wren itself]))
+AM_CONDITIONAL([WREN_INSTALL], [test "x$enable_wren_install" '=' 'xyes'])
+
+# Makefile.am support
+AC_SUBST([WREN_INSTALL_SUBDIRS])
+AM_COND_IF([WREN_INSTALL],
+  [WREN_INSTALL_SUBDIRS='wren-pkg'])
+
+# Set up for the Wren compilation
+AM_COND_IF([WREN_INSTALL],
+  [
+    dnl Sanity check
+    AC_CHECK_FILE([wren-pkg/wren/README.md], [],
+      [AC_MSG_ERROR([You asked me to install Wren but the source tree does not appear to be full.  Try 'git submodule update --init --recursive" if you have not yet done so.])])
+
+
+  ]
+)
+
+dnl === Check for Wren ====================================================
+dnl Don't use pkg-config since Wren itself does not provide a .pc file.
+
+wren_exists='yes'
+AC_CHECK_HEADERS([wren.h], [break], [
+  AC_MSG_WARN([Could not find wren.h])
+  wren_exists=''
+])
+AC_SEARCH_LIBS([wrenNewVM], [wren],
+  [], [
+    AC_MSG_WARN([Could not find -lwren])
+    wren_exists=''
+  ],
+  [-lm]
+)
+
+AS_IF([ test "x$wren_exists" '!=' 'xyes' && test "x$enable_wren_install" '!=' 'xyes' ],
+  [
+    AC_MSG_WARN([I could not find Wren on your system.  Try "$0 --enable-wren-install" to build and install a Wren package.])
+  ]
+)
 
 dnl === Code coverage =====================================================
 
@@ -130,6 +166,9 @@ AC_CONFIG_FILES([
     t/Makefile
 ])
     dnl doc/Makefile
+
+AM_COND_IF([WREN_INSTALL],
+  [AC_CONFIG_FILES([wren-pkg/Makefile])])
 
 dnl pkg-config files: name them after the Wren version
 AC_CONFIG_FILES([src/libwren-"$APIVER".pc:src/libwren.pc.in], [], [APIVER="$APIVER"])

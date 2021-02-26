@@ -15,6 +15,7 @@ AM_VALAFLAGS = \
 	$(EOL)
 
 AM_CFLAGS = \
+	-I $(top_srcdir)/src \
 	-I $(top_builddir)/src \
 	$(BASE_CFLAGS) \
 	$(EOL)

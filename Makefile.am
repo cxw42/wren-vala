@@ -5,7 +5,9 @@
 
 include $(top_srcdir)/rules.mk
 
-SUBDIRS = src t
+ACLOCAL_AMFLAGS = -I m4
+
+SUBDIRS = @WREN_INSTALL_SUBDIRS@ src t
 
 EXTRA_DIST = \
 	.uncrustifyrc \
