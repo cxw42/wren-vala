@@ -5,6 +5,7 @@
 
 include $(top_srcdir)/rules.mk
 
+pkgconfig_DATA =
 include_HEADERS =
 lib_LTLIBRARIES =
 
@@ -12,22 +13,26 @@ lib_LTLIBRARIES =
 
 if WREN_INSTALL
 
+pkgconfig_DATA += \
+	libwren-"${APIVER}".pc \
+	$(EOL)
+
 include_HEADERS += \
-	wren-@APIVER@.h \
-	wren-@APIVER@.hpp \
+	wren-${APIVER}.h \
+	wren-${APIVER}.hpp \
 	$(EOL)
 
 endif
 
-wren-@APIVER@.h: wren/src/include/wren.h
+wren-${APIVER}.h: wren/src/include/wren.h
 	cp "$<" "$@"
 
-wren-@APIVER@.hpp: wren/src/include/wren.hpp
+wren-${APIVER}.hpp: wren/src/include/wren.hpp
 	cp "$<" "$@"
 
 CLEANFILES = \
-	wren-@APIVER@.h \
-	wren-@APIVER@.hpp \
+	wren-${APIVER}.h \
+	wren-${APIVER}.hpp \
 	$(EOL)
 
 # === Libraries =========================================================

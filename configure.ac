@@ -5,9 +5,10 @@ dnl SPDX-License-Identifier: MIT
 
 dnl === Basic setup =======================================================
 
-dnl Note: the version number of this package matches the version of Wren.
+dnl Note: the version number of this package matches the version of Wren in
+dnl the first three digits.
 AC_INIT([Vala bindings for Wren],
-  [0.4.0],
+  [0.4.0.1],
   [https://github.com/cxw42/wren-vala/issues], [wren-vala],
   [https://github.com/cxw42/wren-vala])
 
@@ -40,14 +41,19 @@ AC_ARG_VAR([USER_VALAFLAGS], [extra options for valac(1)])
 
 PKG_PROG_PKG_CONFIG([0.24])
 
-dnl === pkg-config file for wren-vala =====================================
+dnl === pkg-config files ==================================================
 
 dnl Thanks for boilerplate and tips to
 dnl https://tecnocode.co.uk/2014/12/09/a-checklist-for-writing-pkg-config-files/
 
+dnl Pull the first three digits out as the Wren version
+AC_SUBST([WREN_VERSION])
+WREN_VERSION=`perl -Mversion -E 'print join q(.), @{version->parse($ARGV[[0]])->{version}}[[0..2]]' "$PACKAGE_VERSION"`
+AC_MSG_NOTICE([Wren version $WREN_VERSION])
+
 PKG_INSTALLDIR
-AC_SUBST([APIVER], [$PACKAGE_VERSION])  dnl Just to reduce typing :)
-AC_SUBST([APIVERSH], [AS_TR_SH([$PACKAGE_VERSION])])
+AC_SUBST([APIVER], [$WREN_VERSION])  dnl Just to reduce typing :)
+AC_SUBST([APIVERSH], [AS_TR_SH([$WREN_VERSION])])
 
 dnl === Installing Wren from wren-pkg/ ====================================
 
@@ -101,7 +107,7 @@ AC_SEARCH_LIBS([wrenNewVM], [wren "wren-$APIVER"],
 
 AS_IF([ test "x$wren_exists" '!=' 'xyes' && test "x$enable_wren_install" '!=' 'xyes' ],
   [
-    AC_MSG_WARN([I could not find Wren on your system.  Try "$0 --enable-wren-install" to build and install a Wren package.])
+    AC_MSG_ERROR([I could not find Wren on your system.  Try "$0 --enable-wren-install" to build and install a Wren package.])
   ]
 )
 
@@ -179,8 +185,8 @@ AC_CONFIG_FILES([
     dnl doc/Makefile
 
 dnl pkg-config files: name them after the Wren version
-AC_CONFIG_FILES([src/libwren-"$APIVER".pc:src/libwren.pc.in], [], [APIVER="$APIVER"])
-AC_CONFIG_FILES([src/libwren-vala-"$APIVER".pc:src/libwren-vala.pc.in], [], [APIVER="$APIVER"])
+AC_CONFIG_FILES([wren-pkg/libwren-"${APIVER}".pc:wren-pkg/libwren.pc.in], [], [APIVER="$APIVER"])
+AC_CONFIG_FILES([src/libwren-vala-"${APIVER}".pc:src/libwren-vala.pc.in], [], [APIVER="$APIVER"])
 
 dnl Tell the user what is going to happen
 AC_CONFIG_COMMANDS([notify],

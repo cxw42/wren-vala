@@ -1,0 +1,18 @@
+# @configure_input@
+# pkg-config file for Wren itself, version @APIVER@.
+# Wren does not ship a pkg-config file; this is part of
+# wren-vala, <https://github.com/cxw42/wren-vala>.
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: Wren @APIVER@
+Description: The Wren scripting language (v@APIVER@)
+Version: @APIVER@
+Libs: -L${libdir} -lwren-@APIVER@ -lm
+Cflags: -I${includedir}
+# No Requires or Requires.private
+
+# vi: set ft=config: #

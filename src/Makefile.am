@@ -9,7 +9,6 @@ include_HEADERS =
 
 if !WREN_INSTALL
 pkgconfig_DATA += \
-	libwren-@APIVER@.pc \
 	libwren-vala-@APIVER@.pc \
 	$(EOL)
 endif
