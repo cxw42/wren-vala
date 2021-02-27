@@ -24,6 +24,7 @@ endif
 
 libwren_vala_la_SOURCES = \
 	basics.vapi \
+	myconfig.vapi \
 	vm.vala \
 	$(EOL)
 

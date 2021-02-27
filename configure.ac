@@ -25,7 +25,7 @@ AM_INIT_AUTOMAKE([1.13.2 foreign subdir-objects])   dnl 1.13.2+ for better Vala 
 
 dnl NOTE: If you add any variables to config.h, make sure to add them
 dnl to src/myconfig.vapi as well.
-dnl AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 
 LT_INIT
 
