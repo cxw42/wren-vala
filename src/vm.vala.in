@@ -48,6 +48,11 @@ namespace Wren {
    *
    * It HAS-A Wren.VM instead of deriving from a Wren.VM so that it
    * can have Vala-esque naming conventions and reference counting.
+   *
+   * Functions in Wren.VM that use Wren.Handle arguments have
+   * names in this class ending in `_raw`, e.g., call_raw().  The non-`_raw`
+   * functions, e.g., call(), use Wren.HandleV arguments.  This is so the
+   * default use of Handles is consistent with Vala memory management.
    */
   [CCode(cheader_filename="libwren-vala-@APIVER@.h,@WREN_HEADER@")]
   public class VMV : Object
@@ -119,25 +124,25 @@ namespace Wren {
      * The resulting handle can be used with any receiver that provides
      * a function matching that signature.
      */
-    public Handle make_call_handle(string signature)
+    public Handle make_call_handle_raw(string signature)
     {
       return vm.MakeCallHandle(signature);
     }
 
     /** Make a HandleV for a function */
-    public HandleV make_call_handle_v(string signature)
+    public HandleV make_call_handle(string signature)
     {
-      return new HandleV(this, make_call_handle(signature));
+      return new HandleV(this, make_call_handle_raw(signature));
     }
 
-    public InterpretResult call(Handle method)
+    public InterpretResult call_raw(Handle method)
     {
       return vm.Call(method);
     }
 
-    public InterpretResult call_v(HandleV method)
+    public InterpretResult call(HandleV method)
     {
-      return call(method.get_handle());
+      return call_raw(method.get_handle());
     }
 
     public void release_handle(owned Handle handle)
@@ -180,14 +185,14 @@ namespace Wren {
     }
 
     /** Create a new handle for the value in the given slot */
-    public Handle get_slot_handle(int slot)
+    public Handle get_slot_handle_raw(int slot)
     {
       return vm.GetSlotHandle(slot);
     }
 
-    public HandleV get_slot_handle_v(int slot)
+    public HandleV get_slot_handle(int slot)
     {
-      return new HandleV(this, get_slot_handle(slot));
+      return new HandleV(this, get_slot_handle_raw(slot));
     }
 
     public void set_slot_bool(int slot, bool value)
@@ -222,14 +227,14 @@ namespace Wren {
     {
       vm.SetSlotString(slot, text);
     }
-    public void set_slot_handle(int slot, Handle handle)
+    public void set_slot_handle_raw(int slot, Handle handle)
     {
       vm.SetSlotHandle(slot, handle);
     }
 
-    public void set_slot_handle_v(int slot, HandleV handle)
+    public void set_slot_handle(int slot, HandleV handle)
     {
-      set_slot_handle(slot, handle.get_handle());
+      set_slot_handle_raw(slot, handle.get_handle());
     }
 
     public int get_list_count(int slot)
