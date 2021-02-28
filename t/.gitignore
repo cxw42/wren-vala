@@ -4,6 +4,7 @@
 
 # Test executables
 *-t
+*-s
 
 # Generated files
 *.c

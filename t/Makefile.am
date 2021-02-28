@@ -1,12 +1,19 @@
 include $(top_srcdir)/rules.mk
 include $(top_srcdir)/glib-tap.mk
 
+# Tests themselves: executables ending in -t, or scripts ending in -t.sh
 test_programs =
+dist_test_scripts =
+
+# Support programs: executables ending in -s
+test_extra_programs =
 
 # So we don't have to list the sources of every test program individually
 AM_DEFAULT_SOURCE_EXT = .vala
 # But that messes up the linker selection, so:
 CCLD = $(CXX)
+
+# --- Flags ---
 
 AM_VALAFLAGS = \
 	--vapidir $(top_srcdir)/src \
@@ -29,9 +36,19 @@ LDADD = \
 	$(BASE_LIBS) \
 	$(EOL)
 
+# --- Test definitions ---
+
 if !WREN_INSTALL
 test_programs += \
 	000-sanity-t \
 	100-vmv-t \
+	$(EOL)
+
+dist_test_scripts += \
+	110-hello-world-t.sh \
+	$(EOL)
+
+test_extra_programs += \
+	110-hello-world-s \
 	$(EOL)
 endif

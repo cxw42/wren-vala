@@ -97,6 +97,12 @@ AS_IF([test "x$WREN_HEADER" '=' 'x'],
   ]
 )
 
+AC_SEARCH_LIBS([log2], [m],
+  [], [
+    AC_MSG_WARN([Could not find -lm])
+  ]
+)
+
 AC_SEARCH_LIBS([wrenNewVM], [wren "wren-$APIVER"],
   [], [
     AC_MSG_WARN([Could not find -lwren])

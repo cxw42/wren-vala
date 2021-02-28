@@ -48,6 +48,7 @@ namespace Wren {
    * It HAS-A Wren.VM instead of deriving from a Wren.VM so that it
    * can have Vala-esque naming conventions and reference counting.
    */
+  [CCode(cheader_filename="libwren-vala-@APIVER@.h,@WREN_HEADER@")]
   public class VMV : Object
   {
     private VM vm = null;
@@ -55,6 +56,12 @@ namespace Wren {
     public VMV(Configuration? config = null)
     {
       vm = new VM(config);
+    }
+
+    public VMV.with_default_config()
+    {
+      var conf = Wren.Configuration.default ();
+      this(conf);
     }
 
     public void collect_garbage() {

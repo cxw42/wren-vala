@@ -1,5 +1,7 @@
 // t/100-vmv-t.vala
 
+using Wren; // required to pull in the headers on valac 0.50.1.79-3f2a6
+
 void test_instantiate()
 {
   print("# No configuration\n");
@@ -15,6 +17,10 @@ void test_instantiate()
   print("# Default configuration\n");
   conf = Wren.Configuration.default ();
   vmv = new Wren.VMV(conf);
+  assert_nonnull(vmv);
+
+  print("# Default configuration, specialized ctor\n");
+  vmv = new Wren.VMV.with_default_config();
   assert_nonnull(vmv);
 }
 
