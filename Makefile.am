@@ -20,8 +20,8 @@ EXTRA_DIST = \
 phony += prettyprint
 prettyprint:
 	-$(AM_V_GEN)uncrustify -l VALA -c $(top_srcdir)/.uncrustifyrc --replace \
-		src/basics.vapi \
-		src/vm.vala \
+		src/basics.vapi.in \
+		src/vm.vala.in \
 		t/000-sanity-t.vala \
 		t/100-vmv-t.vala \
 		$(EOL)

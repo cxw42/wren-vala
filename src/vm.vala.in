@@ -12,66 +12,243 @@
 namespace Wren {
 
   /**
-   * Reference-counted wrapper for Handle.
+   * Reference-counted wrapper for Handle (Handle, Vala).
    *
    * Use this instead of a bare Handle whenever possible.
    */
   [CCode(cheader_filename="libwren-vala-@APIVER@.h,@WREN_HEADER@")]
-  public class HandleAuto
+  public class HandleV
   {
-    private unowned VM vm;
+    private VMV vm;
     private Handle handle;
 
-    internal unowned Handle GetHandle()
+    internal unowned Handle get_handle()
     {
       return handle;
     }
 
-    public HandleAuto(VM vm, owned Handle handle)
+    public HandleV(VMV vm, owned Handle handle)
     {
       this.vm = vm;
       this.handle = (owned)handle;
     }
 
-    ~HandleAuto()
+    ~HandleV()
     {
-      vm.ReleaseHandle((owned)handle);
+      vm.release_handle((owned)handle);
     }
   }
 
   /**
-   * Virtual machine, with HandleAuto (VMV = "VM - Vala")
+   * Virtual machine, with HandleV (VMV = "VM - Vala")
    *
-   * This class extends {@link Wren.VM} with {@link Wren.HandleAuto}
+   * This class extends {@link Wren.VM} with {@link Wren.HandleV}
    * equivalents of all the {@link Wren.Handle} functions.
+   *
+   * It HAS-A Wren.VM instead of deriving from a Wren.VM so that it
+   * can have Vala-esque naming conventions and reference counting.
    */
-  [CCode(cheader_filename = "libwren-vala-@APIVER@.h,@WREN_HEADER@")]
-  public class VMV : VM
+  public class VMV : Object
   {
+    private VM vm = null;
+
     public VMV(Configuration? config = null)
     {
-      base(config);
+      vm = new VM(config);
     }
 
-    /** Make a HandleAuto for a function */
-    public HandleAuto MakeCallHandleAuto(string signature)
-    {
-      return new HandleAuto(this, MakeCallHandle(signature));
+    public void collect_garbage() {
+      vm.CollectGarbage();
     }
 
-    public InterpretResult CallAuto(HandleAuto method)
+    public InterpretResult interpret(string module, string source)
     {
-      return Call(method.GetHandle());
+      return vm.Interpret(module, source);
     }
 
-    public HandleAuto GetSlotHandleAuto(int slot)
+    /**
+     * Create a new handle for a method of the given signature.
+     *
+     * The resulting handle can be used with any receiver that provides
+     * a function matching that signature.
+     */
+    public Handle make_call_handle(string signature)
     {
-      return new HandleAuto(this, GetSlotHandle(slot));
+      return vm.MakeCallHandle(signature);
     }
 
-    public void SetSlotHandleAuto(int slot, HandleAuto handle)
+    /** Make a HandleV for a function */
+    public HandleV make_call_handle_v(string signature)
     {
-      SetSlotHandle(slot, handle.GetHandle());
+      return new HandleV(this, make_call_handle(signature));
+    }
+
+    public InterpretResult call(Handle method)
+    {
+      return vm.Call(method);
+    }
+
+    public InterpretResult call_v(HandleV method)
+    {
+      return call(method.get_handle());
+    }
+
+    public void release_handle(owned Handle handle)
+    {
+      vm.ReleaseHandle((owned)handle);
+    }
+
+    public int get_slot_count()
+    {
+      return vm.GetSlotCount();
+    }
+    public void ensure_slots(int num_slots)
+    {
+      vm.EnsureSlots(num_slots);
+    }
+
+    public Type get_slot_type(int slot)
+    {
+      return vm.GetSlotType(slot);
+    }
+    public bool get_slot_bool(int slot)
+    {
+      return vm.GetSlotBool(slot);
+    }
+    public unowned uint8[] get_slot_bytes(int slot)
+    {
+      return vm.GetSlotBytes(slot);
+    }
+    public double get_slot_double(int slot)
+    {
+      return vm.GetSlotDouble(slot);
+    }
+    public void *get_slot_foreign(int slot)
+    {
+      return vm.GetSlotForeign(slot);
+    }
+    public unowned string get_slot_string(int slot)
+    {
+      return vm.GetSlotString(slot);
+    }
+
+    /** Create a new handle for the value in the given slot */
+    public Handle get_slot_handle(int slot)
+    {
+      return vm.GetSlotHandle(slot);
+    }
+
+    public HandleV get_slot_handle_v(int slot)
+    {
+      return new HandleV(this, get_slot_handle(slot));
+    }
+
+    public void set_slot_bool(int slot, bool value)
+    {
+      vm.SetSlotBool(slot, value);
+    }
+    public void set_slot_bytes(int slot, uint8[] bytes)
+    {
+      vm.SetSlotBytes(slot, bytes);
+    }
+    public void set_slot_double(int slot, double value)
+    {
+      vm.SetSlotDouble(slot, value);
+    }
+    public void *set_slot_new_foreign(int slot, int class_slot, size_t size)
+    {
+      return vm.SetSlotNewForeign(slot, class_slot, size);
+    }
+    public void set_slot_new_list(int slot)
+    {
+      vm.SetSlotNewList(slot);
+    }
+    public void set_slot_new_map(int slot)
+    {
+      vm.SetSlotNewMap(slot);
+    }
+    public void set_slot_null(int slot)
+    {
+      vm.SetSlotNull(slot);
+    }
+    public void set_slot_string(int slot, string text)
+    {
+      vm.SetSlotString(slot, text);
+    }
+    public void set_slot_handle(int slot, Handle handle)
+    {
+      vm.SetSlotHandle(slot, handle);
+    }
+
+    public void set_slot_handle_v(int slot, HandleV handle)
+    {
+      set_slot_handle(slot, handle.get_handle());
+    }
+
+    public int get_list_count(int slot)
+    {
+      return vm.GetListCount(slot);
+    }
+    public void get_list_element(int list_slot, int index, int element_slot)
+    {
+      vm.GetListElement(list_slot, index, element_slot);
+    }
+    public void set_list_element(int list_slot, int index, int element_slot)
+    {
+      vm.SetListElement(list_slot, index, element_slot);
+    }
+    public void insert_inList(int list_slot, int index, int element_slot)
+    {
+      vm.InsertInList(list_slot, index, element_slot);
+    }
+
+    public int get_map_count(int slot)
+    {
+      return vm.GetMapCount(slot);
+    }
+    public int get_map_contains_key(int map_slot, int key_slot)
+    {
+      return vm.GetMapContainsKey(map_slot, key_slot);
+    }
+    public void get_map_value(int map_slot, int key_slot, int element_slot)
+    {
+      vm.GetMapValue(map_slot, key_slot, element_slot);
+    }
+    public void set_map_value(int map_slot, int key_slot, int element_slot)
+    {
+      vm.SetMapValue(map_slot, key_slot, element_slot);
+    }
+    public void remove_map_value(int map_slot, int key_slot, int removed_value_slot)
+    {
+      vm.RemoveMapValue(map_slot, key_slot, removed_value_slot);
+    }
+
+    public void get_variable(string module, string name, int slot)
+    {
+      vm.GetVariable(module, name, slot);
+    }
+    public bool has_variable(string module, string name)
+    {
+      return vm.HasVariable(module, name);
+    }
+
+    public bool has_module(string module)
+    {
+      return vm.HasModule(module);
+    }
+
+    public void abort_fiber(int slot)
+    {
+      vm.AbortFiber(slot);
+    }
+
+    public void *get_user_data()
+    {
+      return vm.GetUserData();
+    }
+    public void set_user_data(void *user_data)
+    {
+      vm.SetUserData(user_data);
     }
 
   } // class VMV
