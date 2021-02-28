@@ -35,3 +35,8 @@ prettyprint:
 phony += cleanwren
 cleanwren:
 	-cd wren-pkg/wren && git clean -dfx
+
+# Used by coverage.sh --- remove the existing code-coverage data.
+remove-code-coverage-data:
+	-rm -rf "$(CODE_COVERAGE_OUTPUT_FILE)" "$(CODE_COVERAGE_OUTPUT_FILE).tmp" "$(CODE_COVERAGE_OUTPUT_DIRECTORY)"
+	-find . -name "*.gcda" -delete

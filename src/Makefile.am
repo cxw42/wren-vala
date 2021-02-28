@@ -30,7 +30,7 @@ libwren_vala_la_SOURCES = \
 libwren_vala_la_VALAFLAGS = \
 	--library libwren-vala-@APIVER@.so -H libwren-vala-@APIVER@.h \
 	--vapi libwren-vala.vapi \
-	--pkg gobject-2.0 \
+	$(AM_VALAFLAGS) \
 	$(EOL)
 
 # === vapi and header ===
@@ -46,6 +46,3 @@ dist_vapi_DATA += libwren-vala-@APIVER@.vapi
 DISTCLEANFILES += libwren-vala-@APIVER@.vapi
 include_HEADERS += libwren-vala-@APIVER@.h
 endif
-
-libwren_vala_la_CFLAGS = $(BASE_CFLAGS)
-libwren_vala_la_LIBADD = $(BASE_LIBS)

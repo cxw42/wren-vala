@@ -137,7 +137,10 @@ AM_COND_IF(
     [CODE_COVERAGE_ENABLED],
     [ dnl then
         AC_SUBST([GENHTMLHACK], ['dnl
-            perl -n -i -e '"'"'print unless m{\b(?:src|t)/?.*?/glib-2.0.vapi}..m{^end_of_record}'"'"' "$(CODE_COVERAGE_OUTPUT_FILE)" ; dnl
+            perl -n -i -e '"'"'dnl
+              s{\bt/(libwren-vala-.*vapi)$$}{src/$$1}; dnl
+              print unless m{\b(?:src|t)/?.*?/glib-2.0.vapi}..m{^end_of_record} dnl
+            '"'"' "$(CODE_COVERAGE_OUTPUT_FILE)" ; dnl
             LANG=C $(GENHTMLREAL) dnl
         '])
     ]
@@ -177,6 +180,9 @@ dnl https://lists.gnu.org/archive/html/automake/2015-03/msg00004.html
 
 dnl AC_SUBST([wholearchive], [-Wl,--whole-archive])
 dnl AC_SUBST([nowholearchive], [-Wl,--no-whole-archive])
+
+# Create a place to put in extra libraries project-wide
+LIBS="\$(LOCAL_LIBS) $LIBS"
 
 dnl === Output ============================================================
 
