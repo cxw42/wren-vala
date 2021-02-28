@@ -21,9 +21,13 @@ vapidir = $(datadir)/vala/vapi
 #   isn't being passed through.
 AM_VALAFLAGS = \
 	$(LOCAL_VALA_FLAGS) \
+	$(MY_VALA_PKGS) \
+	$(USER_VALAFLAGS) \
+	$(EOL)
+
+MY_VALA_PKGS = \
 	--pkg gobject-2.0 \
 	--pkg gio-2.0 \
-	$(USER_VALAFLAGS) \
 	$(EOL)
 
 # C settings, which are the same throughout.  LOCAL_CFLAGS is filled in

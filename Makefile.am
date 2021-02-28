@@ -7,7 +7,7 @@ include $(top_srcdir)/rules.mk
 
 ACLOCAL_AMFLAGS = -I m4 -I m4-bundled
 
-SUBDIRS = wren-pkg src t
+SUBDIRS = wren-pkg src t doc
 
 EXTRA_DIST = \
 	bootstrap \
