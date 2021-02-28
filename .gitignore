@@ -3,6 +3,7 @@ Makefile
 libwren*.pc
 /src/vm.vala
 /src/basics.vapi
+/t/common.sh
 
 # Prerequisites
 *.d

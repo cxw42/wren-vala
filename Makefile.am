@@ -17,6 +17,12 @@ EXTRA_DIST = \
 	.uncrustifyrc \
 	$(EOL)
 
+# Since we always regenerate the Vala source, we update files in src/ .
+# As a result, normal distcheck (RO src/ directory) fails.  Rather than
+# giving up on distcheck entirely, permit modifying src/ .
+distcheck-hook:
+	chmod -R u+w $(distdir)
+
 phony += prettyprint
 prettyprint:
 	-$(AM_V_GEN)uncrustify -l VALA -c $(top_srcdir)/.uncrustifyrc --replace \

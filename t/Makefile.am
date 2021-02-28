@@ -1,12 +1,13 @@
 include $(top_srcdir)/rules.mk
 include $(top_srcdir)/glib-tap.mk
 
-# Tests themselves: executables ending in -t, or scripts ending in -t.sh
+# Tests themselves: executables ending in -t, and scripts ending in -t.sh
 test_programs =
 dist_test_scripts =
 
-# Support programs: executables ending in -s
+# Support programs: executables ending in -s, and scripts ending in -s.sh
 test_extra_programs =
+dist_test_extra_scripts =
 
 # So we don't have to list the sources of every test program individually
 AM_DEFAULT_SOURCE_EXT = .vala
@@ -51,4 +52,12 @@ dist_test_scripts += \
 test_extra_programs += \
 	110-hello-world-s \
 	$(EOL)
+
+dist_test_extra_scripts += \
+	bash-test-utils-s.sh \
+	$(EOL)
+
+# Make sure common.sh gets remade if necessary before running tests
+all-local: common.sh
+
 endif

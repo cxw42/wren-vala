@@ -186,6 +186,7 @@ AC_CONFIG_FILES([
     src/basics.vapi
     src/vm.vala
     t/Makefile
+    t/common.sh
     wren-pkg/Makefile
 ])
     dnl doc/Makefile
