@@ -1,3 +1,6 @@
+# Copyright (c) 2021 Christopher White.  All rights reserved.
+# SPDX-License-Identifier: MIT
+
 # common rules
 
 # for convenience at the ends of lists

@@ -1,3 +1,6 @@
+# Copyright (c) 2021 Christopher White.  All rights reserved.
+# SPDX-License-Identifier: MIT
+
 include $(top_srcdir)/rules.mk
 include $(top_srcdir)/glib-tap.mk
 

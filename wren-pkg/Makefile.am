@@ -1,4 +1,5 @@
-# Makefile.am --- build and install Wren itself, part of wren-vala
+# Makefile.am --- build and install Wren itself.
+# This Makefile.am is part of wren-vala
 # https://github.com/cxw42/wren-vala
 # Copyright (c) 2021 Christopher White
 # SPDX-License-Identifier: MIT

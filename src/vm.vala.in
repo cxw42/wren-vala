@@ -4,6 +4,7 @@
 // See @WREN_HEADER@ for documentation.
 //
 // By Christopher White <cxwembedded@gmail.com>
+// Copyright (c) 2021 Christopher White.  All rights reserved.
 // SPDX-License-Identifier: MIT
 //
 // TODO: check the ownership on Handle instances.

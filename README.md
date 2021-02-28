@@ -47,15 +47,28 @@ are not checked in, so use this command carefully!
 
 - `src/`: source code for the Vala bindings
 - `t/`: tests for the Vala bindings
+- `doc/`: documentation for the Vala bindings
 - `wren-pkg/`: Code to install wren to the system.  Only tested on Linux,
   as of present.
   - `wren-pkg/wren/`: [wren-lang/wren](https://github.com/wren-lang/wren),
     as a git submodule
 
+# Useful things
+
+- Code coverage of the test suite: run `./coverage.sh`, then open
+  `wren-vala-coverage/index.html` in a Web browser.  Requires gcov(1) and
+  lcov(1).
+- Documentation: run `make html`, then open `doc/valadoc/index.html` in a
+  Web browser.
+
 ## Legal
 
 Licensed MIT (the same as Wren itself).
-Copyright (c) 2021 Christopher White.
+Copyright (c) 2021 Christopher White.  All rights reserved.  See file
+[LICENSE](LICENSE) for details.
 
 Contains material derived from Wren, which is
-Copyright (c) 2021 Robert Nystrom and Wren Contributors.
+Copyright (c) 2021 Robert Nystrom and Wren Contributors, licensed MIT.
+
+`t/bash-test-utils-s.sh` is Copyright (c) 2008-2012, Advanced Micro Devices,
+Inc., and is licensed BSD 2-clause (see that file for details of its license).
