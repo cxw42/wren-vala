@@ -14,7 +14,7 @@ lib_LTLIBRARIES =
 if WREN_INSTALL
 
 pkgconfig_DATA += \
-	libwren-"${APIVER}".pc \
+	libwren-${APIVER}.pc \
 	$(EOL)
 
 include_HEADERS += \

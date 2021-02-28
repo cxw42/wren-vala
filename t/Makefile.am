@@ -21,10 +21,11 @@ AM_CFLAGS = \
 	-I $(top_builddir)/src \
 	$(BASE_CFLAGS) \
 	$(EOL)
+
+# Libs: -lwren is in LIBS, which is included by default.
 LDADD = \
 	-L$(top_builddir)/src \
 	-lwren-vala \
-	-lwren \
 	$(BASE_LIBS) \
 	$(EOL)
 

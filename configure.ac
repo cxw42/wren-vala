@@ -185,8 +185,8 @@ AC_CONFIG_FILES([
     dnl doc/Makefile
 
 dnl pkg-config files: name them after the Wren version
-AC_CONFIG_FILES([wren-pkg/libwren-"${APIVER}".pc:wren-pkg/libwren.pc.in], [], [APIVER="$APIVER"])
-AC_CONFIG_FILES([src/libwren-vala-"${APIVER}".pc:src/libwren-vala.pc.in], [], [APIVER="$APIVER"])
+AC_CONFIG_FILES([wren-pkg/libwren-"${APIVER}".pc:wren-pkg/libwren.pc.in], [], [APIVER=$APIVER])
+AC_CONFIG_FILES([src/libwren-vala-"${APIVER}".pc:src/libwren-vala.pc.in], [], [APIVER=$APIVER])
 
 dnl Tell the user what is going to happen
 AC_CONFIG_COMMANDS([notify],
