@@ -1,6 +1,8 @@
 include $(top_srcdir)/rules.mk
 include $(top_srcdir)/glib-tap.mk
 
+EXTRA_DIST += .gitignore
+
 # Tests themselves: executables ending in -t, and scripts ending in -t.sh
 test_programs =
 dist_test_scripts =

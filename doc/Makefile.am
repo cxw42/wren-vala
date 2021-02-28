@@ -1,6 +1,8 @@
 include $(top_srcdir)/rules.mk
 
-.PHONY: valadoc clean-valadoc
+EXTRA_DIST = .gitignore
+
+phony += valadoc clean-valadoc
 
 html-local: valadoc
 

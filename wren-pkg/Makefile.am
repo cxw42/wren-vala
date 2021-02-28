@@ -5,6 +5,8 @@
 
 include $(top_srcdir)/rules.mk
 
+EXTRA_DIST = .gitignore
+
 pkgconfig_DATA =
 include_HEADERS =
 lib_LTLIBRARIES =

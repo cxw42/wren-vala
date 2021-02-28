@@ -1,5 +1,7 @@
 include $(top_srcdir)/rules.mk
 
+EXTRA_DIST = .gitignore
+
 pkgconfig_DATA =
 lib_LTLIBRARIES =
 dist_vapi_DATA =

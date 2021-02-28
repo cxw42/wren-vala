@@ -14,6 +14,7 @@ EXTRA_DIST = \
 	README.md \
 	tap-driver.sh \
 	tap-test \
+	.gitignore \
 	.uncrustifyrc \
 	$(EOL)
 
