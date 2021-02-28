@@ -78,3 +78,12 @@ libwren_@APIVER@_la_SOURCES = \
 	wren/src/optional/wren_opt_random.h \
 	wren/src/optional/wren_opt_random.wren.inc \
 	$(EOL)
+
+# === Cleanup ===========================================================
+# When not installing Wren, don't leave deps files lying around ---
+# we don't need them, and they dirty the repo.
+
+if !WREN_INSTALL
+all-local:
+	-find $(builddir) -name .deps -exec rm -rf {} +
+endif
