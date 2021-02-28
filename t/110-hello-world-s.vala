@@ -4,7 +4,7 @@ using Wren; // required to pull in the headers on valac 0.50.1.79-3f2a6
 
 void test_print()
 {
-  var vmv = new Wren.VMV.with_default_config();
+  var vmv = new Wren.VMV();
   assert_nonnull(vmv);
   var ok = vmv.interpret("main", """ System.print("Hello, world!") """);
   assert_true(ok == SUCCESS);

@@ -51,17 +51,56 @@ namespace Wren {
   [CCode(cheader_filename="libwren-vala-@APIVER@.h,@WREN_HEADER@")]
   public class VMV : Object
   {
+    /** Print a message to stdout */
+    private static void writeFn(VM vm, string text)
+    {
+      print("%s", text);
+    }
+
+    /**
+     * Report an error to stderr.
+     *
+     * Modified from wren-pkg/wren/example/embedding/main.c.
+     */
+    private static void errorFn(VM vm, Wren.ErrorType errorType,
+      string module, int line,
+      string msg)
+    {
+      switch (errorType)
+      {
+      case COMPILE:
+        printerr("[%s line %d] [Error] %s\n", module, line, msg);
+        break;
+      case STACK_TRACE:
+        printerr("[%s line %d] in %s\n", module, line, msg);
+        break;
+      case RUNTIME:
+        printerr("[Runtime Error] %s\n", msg);
+        break;
+      }
+    }
+
+    /** The wrapped Wren VM */
     private VM vm = null;
 
-    public VMV(Configuration? config = null)
+    /** Create a VM with a particular configuration */
+    public VMV.with_configuration(Configuration? config = null)
     {
       vm = new VM(config);
     }
 
-    public VMV.with_default_config()
+    /**
+     * Create a VM with a default configuration.
+     *
+     * The default is the Wren default configuration, plus a writeFn and
+     * an errorFn modified from wren-pkg/wren/example/embedding/main.c.
+     */
+    public VMV()
     {
       var conf = Wren.Configuration.default ();
-      this(conf);
+      conf.writeFn = writeFn;
+      conf.errorFn = errorFn;
+      this.with_configuration(conf);
     }
 
     public void collect_garbage() {
