@@ -51,6 +51,8 @@ libwren_@APIVER@_la_CFLAGS = \
 	$(EOL)
 
 libwren_@APIVER@_la_SOURCES = \
+	wren/src/include/wren.h \
+	wren/src/include/wren.hpp \
 	wren/src/vm/wren_common.h \
 	wren/src/vm/wren_compiler.c \
 	wren/src/vm/wren_compiler.h \

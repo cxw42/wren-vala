@@ -43,6 +43,7 @@ libwren-vala-@APIVER@.vapi: libwren-vala.vapi basics.vapi
 
 if !WREN_INSTALL
 dist_vapi_DATA += libwren-vala-@APIVER@.vapi
+DISTCLEANFILES += libwren-vala-@APIVER@.vapi
 include_HEADERS += libwren-vala-@APIVER@.h
 endif
 
