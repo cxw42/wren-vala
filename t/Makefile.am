@@ -6,6 +6,9 @@ include $(top_srcdir)/glib-tap.mk
 
 EXTRA_DIST += .gitignore
 
+phony += build-tests
+build-tests: $(check_PROGRAMS)
+
 # Tests themselves: executables ending in -t, and scripts ending in -t.sh
 test_programs =
 dist_test_scripts =
@@ -44,6 +47,9 @@ if !WREN_INSTALL
 test_programs += \
 	000-sanity-t \
 	100-vmv-t \
+	120-read-var-from-wren-t \
+	130-call-wren-t \
+	140-roundtrip-data-t \
 	$(EOL)
 
 dist_test_scripts += \
