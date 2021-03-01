@@ -196,7 +196,6 @@ AC_CONFIG_FILES([
     t/common.sh
     wren-pkg/Makefile
 ])
-    dnl doc/Makefile
 
 dnl pkg-config files: name them after the Wren version
 AC_CONFIG_FILES([wren-pkg/libwren-"${APIVER}".pc:wren-pkg/libwren.pc.in], [], [APIVER=$APIVER])

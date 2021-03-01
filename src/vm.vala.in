@@ -57,6 +57,8 @@ namespace Wren {
   [CCode(cheader_filename="libwren-vala-@APIVER@.h,@WREN_HEADER@")]
   public class VMV : Object
   {
+    // TODO? provide VMV wrappers for the writeFn and errorFn?
+
     /** Print a message to stdout */
     private static void writeFn(VM vm, string text)
     {
@@ -69,8 +71,7 @@ namespace Wren {
      * Modified from wren-pkg/wren/example/embedding/main.c.
      */
     private static void errorFn(VM vm, Wren.ErrorType errorType,
-      string module, int line,
-      string msg)
+      string? module, int line, string msg)
     {
       switch (errorType)
       {

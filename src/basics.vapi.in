@@ -1,9 +1,9 @@
 // @configure_input@
 
 // basics.vapi: Vala bindings for Wren.
-// See @WREN_HEADER@ for documentation.  This file is in the same order as
-// wren.h, as of writing.
-// See vm.vala for convenience classes Wren.HandleAuto and Wren.VMV.
+// Documentation is taken from wren.h (license below).  This file is in the
+// same order as wren.h, as of writing.
+// See vm.vala for convenience classes Wren.HandleV and Wren.VMV.
 //
 // By Christopher White <cxwembedded@gmail.com>
 // SPDX-License-Identifier: MIT
@@ -71,8 +71,29 @@ namespace Wren {
     STACK_TRACE,
   }
 
+  /**
+   * Reports an error to the user.
+   *
+   * An error detected during compile time is reported by calling this once with
+   * [type] `WREN_ERROR_COMPILE`, the resolved name of the [module] and [line]
+   * where the error occurs, and the compiler's error [message].
+   *
+   * A runtime error is reported by calling this once with [type]
+   * `WREN_ERROR_RUNTIME`, no [module] or [line], and the runtime error's
+   * [message]. After that, a series of [type] `WREN_ERROR_STACK_TRACE` calls are
+   * made for each line in the stack trace. Each of those has the resolved
+   * [module] and [line] where the method or function is defined and [message] is
+   * the name of the method or function.
+   *
+   * @param vm      The VM
+   * @param type    The type of error
+   * @param module  For compile errors and stack traces, the module.
+   *                For runtime errors, NULL.
+   * @param line    The line number (not used for runtime errors)
+   * @param message The error message
+   */
   [CCode(has_target = false)]
-  public delegate void ErrorFn(VM vm, ErrorType type, string module,
+  public delegate void ErrorFn(VM vm, ErrorType type, string? module,
     int line, string message);
 
   public struct ForeignClassMethods
@@ -116,6 +137,7 @@ namespace Wren {
     RUNTIME_ERROR,
   }
 
+  [CCode(cprefix="WREN_TYPE_", has_type_id = "false")]
   public enum Type {
     BOOL, NUM, FOREIGN, LIST, MAP, NULL, STRING, UNKNOWN,
   }
