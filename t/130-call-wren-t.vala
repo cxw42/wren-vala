@@ -19,7 +19,7 @@ void test_call()
   var vm = new Wren.VMV.with_configuration(conf);
   assert_nonnull(vm);
   if(vm == null) {
-    return;
+    return; // LCOV_EXCL_LINE - unreachable on a successful test
   }
 
   var ok = vm.interpret("main", """
@@ -28,7 +28,7 @@ void test_call()
                         """);
   assert_true(ok == SUCCESS);
   if(ok != SUCCESS) {
-    return;
+    return; // LCOV_EXCL_LINE - unreachable on a successful test
   }
 
   vm.ensure_slots(2);
@@ -36,7 +36,7 @@ void test_call()
   var printhandle = vm.make_call_handle("print(_)");
   assert_nonnull(printhandle);
   if(printhandle == null) {
-    return;
+    return; // LCOV_EXCL_LINE - unreachable on a successful test
   }
 
   vm.get_variable("main", "System", 0);
@@ -44,7 +44,7 @@ void test_call()
   ok = vm.call(printhandle);
   assert_true(ok == SUCCESS);
   if(ok != SUCCESS) {
-    return;
+    return; // LCOV_EXCL_LINE - unreachable on a successful test
   }
 
   assert_cmpstr(g_str, EQ, "Hello\n");

@@ -13,7 +13,7 @@ void test_read()
                         """);
   assert_true(ok == SUCCESS);
   if(ok != SUCCESS) {
-    return;
+    return; // LCOV_EXCL_LINE - unreachable on a successful test
   }
 
   vm.ensure_slots(1);

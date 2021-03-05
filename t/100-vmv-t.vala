@@ -49,7 +49,7 @@ void test_misc()  // for coverage
                         """);
   assert_true(ok == SUCCESS);
   if(ok != SUCCESS) {
-    return;
+    return; // LCOV_EXCL_LINE - unreachable on a successful test
   }
 
   assert_true(vm.has_module("main"));
