@@ -41,6 +41,39 @@ namespace Wren {
   }
 
   /**
+   * Print a message to stdout.
+   *
+   * This is the default writeFn for a {@link Wren.VMV}.
+   */
+  public void defaultWriteFn(VM vm, string text)
+  {
+    print("%s", text);
+  }
+
+  /**
+   * Report an error to stderr.
+   *
+   * This is the default errorFn for a {@link Wren.VMV}.
+   * Modified from wren-pkg/wren/example/embedding/main.c.
+   */
+  public void defaultErrorFn(VM vm, Wren.ErrorType errorType,
+    string? module, int line, string msg)
+  {
+    switch (errorType)
+    {
+    case COMPILE:
+      printerr("[%s line %d] [Error] %s\n", module, line, msg);
+      break;
+    case STACK_TRACE:
+      printerr("[%s line %d] in %s\n", module, line, msg);
+      break;
+    case RUNTIME:
+      printerr("[Runtime Error] %s\n", msg);
+      break;
+    }
+  }
+
+  /**
    * Virtual machine, with HandleV (VMV = "VM - Vala")
    *
    * This class extends {@link Wren.VM} with {@link Wren.HandleV}
@@ -72,36 +105,6 @@ namespace Wren {
 
     // --- VM functions -------------------------------------------
 
-    // TODO? provide VMV wrappers for the writeFn and errorFn?
-
-    /** Print a message to stdout */
-    private static void writeFn(VM vm, string text)
-    {
-      print("%s", text);
-    }
-
-    /**
-     * Report an error to stderr.
-     *
-     * Modified from wren-pkg/wren/example/embedding/main.c.
-     */
-    private static void errorFn(VM vm, Wren.ErrorType errorType,
-      string? module, int line, string msg)
-    {
-      switch (errorType)
-      {
-      case COMPILE:
-        printerr("[%s line %d] [Error] %s\n", module, line, msg);
-        break;
-      case STACK_TRACE:
-        printerr("[%s line %d] in %s\n", module, line, msg);
-        break;
-      case RUNTIME:
-        printerr("[Runtime Error] %s\n", msg);
-        break;
-      }
-    }
-
     /** Bind a foreign class */
     private static ForeignClassMethods bindForeignClass(VM vm, string module, string className)
     {
@@ -131,8 +134,8 @@ namespace Wren {
     public VMV()
     {
       var conf = Wren.Configuration.default ();
-      conf.writeFn = writeFn;
-      conf.errorFn = errorFn;
+      conf.writeFn = defaultWriteFn;
+      conf.errorFn = defaultErrorFn;
       conf.bindForeignClassFn = bindForeignClass;
       this.with_configuration(conf);
     }
@@ -339,6 +342,17 @@ namespace Wren {
 
     // --- High-level interface -----------------------------------
     // This section binds classes as a whole between Vala and Wren
+
+#if 0
+    /**
+     * Get a slot as a GValue
+     */
+    public Value get_slot(int slot)
+    {
+      // TODO
+      return Value(GLib.Type.INVALID);
+    }
+#endif
 
     /**
      * Expose class T to Wren, as part of module `mod`
