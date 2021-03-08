@@ -2,6 +2,7 @@
 Makefile
 libwren*.pc
 /src/basics.vapi
+/src/marshal.vala
 /src/trampoline.vala
 /src/vm.vala
 /src/wrennull.c

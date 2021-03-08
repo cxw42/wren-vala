@@ -28,6 +28,7 @@ endif
 
 libwren_vala_la_SOURCES = \
 	basics.vapi \
+	marshal.vala \
 	myconfig.vapi \
 	trampoline.vala \
 	vm.vala \

@@ -50,6 +50,7 @@ test_programs += \
 	120-read-var-from-wren-t \
 	130-call-wren-t \
 	140-roundtrip-data-t \
+	150-marshal-t \
 	200-expose-class-t \
 	$(EOL)
 

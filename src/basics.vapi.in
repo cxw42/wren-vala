@@ -180,7 +180,7 @@ namespace Wren {
     public extern int GetSlotCount();
     public extern void EnsureSlots(int numSlots);
 
-    public extern Type GetSlotType(int slot);
+    public extern Wren.Type GetSlotType(int slot);
     public extern bool GetSlotBool(int slot);
     public extern unowned uint8[] GetSlotBytes(int slot);
     public extern double GetSlotDouble(int slot);
