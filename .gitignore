@@ -4,6 +4,7 @@ libwren*.pc
 /src/basics.vapi
 /src/trampoline.vala
 /src/vm.vala
+/src/wrennull.c
 /t/common.sh
 
 # Prerequisites

@@ -31,6 +31,7 @@ libwren_vala_la_SOURCES = \
 	myconfig.vapi \
 	trampoline.vala \
 	vm.vala \
+	wrennull.c \
 	$(EOL)
 
 libwren_vala_la_VALAFLAGS = \

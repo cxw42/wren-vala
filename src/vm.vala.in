@@ -115,6 +115,7 @@ namespace Wren {
     /** Create a VM with a particular configuration */
     public VMV.with_configuration(Configuration? config = null)
     {
+      Wren.static_init();
       vm = new VM(config);
       vm.SetUserData(this);
     }
