@@ -74,6 +74,32 @@ namespace Wren {
   }
 
   /**
+   * Interface exposing functions to Wren
+   *
+   * This is used by {@link Wren.Tramp} to get the available methods.
+   */
+  public interface HasMethods : GLib.Object
+  {
+    /**
+     * Implement a Wren method.
+     *
+     * @param self  The object instance (from Wren's foreign data)
+     * @param vm    The Wren VM
+     */
+    [CCode(has_target = false)]
+    public delegate void MethodImpl(GLib.Object self, VMV vm);
+
+    /**
+     * Fill a hash table with a map from {@link Wren.Tramp.hash_key} to
+     * {@link Wren.HasMethods.MethodImpl}.
+     *
+     * Must be callable multiple times, returning the same value every time.
+     * @param methods   An empty hash table to be filled
+     */
+    public abstract void get_methods(ref HashTable<string, MethodImpl> methods);
+  } // interface HasMethods
+
+  /**
    * Virtual machine, with HandleV (VMV = "VM - Vala")
    *
    * This class extends {@link Wren.VM} with {@link Wren.HandleV}
@@ -109,8 +135,19 @@ namespace Wren {
     private static ForeignClassMethods bindForeignClass(VM vm, string module, string className)
     {
       var self = vm.GetUserData() as VMV;
-      debug("bindForeignClass %s!%s in %p\n", module, className, self);
+      debug("bindForeignClass %s in %p\n",
+        Tramp.hash_key(module, className), self);
       return self.tramp_.get_functions(module, className);
+    }
+
+    /** Bind a foreign method */
+    private static ForeignMethodFn bindForeignMethod(VM vm, string module,
+      string className, bool isStatic, string signature)
+    {
+      var self = vm.GetUserData() as VMV;
+      debug("bindForeignMethod %s in %p\n",
+        Tramp.hash_key(module, className, isStatic, signature), self);
+      return self.tramp_.get_method(module, className, isStatic, signature);
     }
 
     // --- Constructors -------------------------------------------
@@ -137,6 +174,7 @@ namespace Wren {
       conf.writeFn = defaultWriteFn;
       conf.errorFn = defaultErrorFn;
       conf.bindForeignClassFn = bindForeignClass;
+      conf.bindForeignMethodFn = bindForeignMethod;
       this.with_configuration(conf);
     }
 
@@ -370,11 +408,18 @@ namespace Wren {
 
       wren.append_printf("foreign class %s {\n", type.name());
 
+      // Properties
       // foreach (ParamSpec spec in ocl.list_properties()) {
       // TODO print ("%s\n", spec.get_name ());
       // }
 
       wren.append("construct new() {}\n");
+
+      // Functions
+      Tramp.foreach_method_of_type(type, (k,v) => {
+        wren.append(Tramp.foreign_decl_for_key(k) + "\n");
+      });
+
       wren.append("}\n");
       debug("Wren source: >>%s<<", wren.str);
 

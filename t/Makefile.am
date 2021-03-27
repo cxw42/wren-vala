@@ -47,6 +47,7 @@ if !WREN_INSTALL
 test_programs += \
 	000-sanity-t \
 	100-vmv-t \
+	105-tramp-t \
 	120-read-var-from-wren-t \
 	130-call-wren-t \
 	140-roundtrip-data-t \

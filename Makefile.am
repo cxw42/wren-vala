@@ -35,6 +35,7 @@ prettyprint:
 		src/vm.vala.in \
 		src/wrennull.c.in \
 		t/000-sanity-t.vala \
+		t/105-tramp-t.vala \
 		t/100-vmv-t.vala \
 		t/110-hello-world-s.vala \
 		t/120-read-var-from-wren-t.vala \
