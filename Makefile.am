@@ -41,6 +41,14 @@ phony += cleanwren
 cleanwren:
 	-cd wren-pkg/wren && git clean -dfx
 
+# Shortcuts for tests
+phony += test
+test: check
+
+phony += build-tests
+build-tests: all
+	+$(MAKE) -C t $@
+
 # Used by coverage.sh --- remove the existing code-coverage data.
 remove-code-coverage-data:
 	-rm -rf "$(CODE_COVERAGE_OUTPUT_FILE)" "$(CODE_COVERAGE_OUTPUT_FILE).tmp" "$(CODE_COVERAGE_OUTPUT_DIRECTORY)"
