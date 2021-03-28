@@ -197,6 +197,7 @@ AC_CONFIG_FILES([
 
 dnl Source files: make them RO
 AC_CONFIG_FILES([src/basics.vapi], [chmod a-w src/basics.vapi])
+AC_CONFIG_FILES([src/trampoline.vala], [chmod a-w src/trampoline.vala])
 AC_CONFIG_FILES([src/vm.vala], [chmod a-w src/vm.vala])
 
 dnl pkg-config files: name them after the Wren version

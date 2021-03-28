@@ -28,6 +28,7 @@ phony += prettyprint
 prettyprint:
 	-$(AM_V_GEN)uncrustify -l VALA -c $(top_srcdir)/.uncrustifyrc --replace \
 		src/basics.vapi.in \
+		src/trampoline.vala.in \
 		src/vm.vala.in \
 		t/000-sanity-t.vala \
 		t/100-vmv-t.vala \
@@ -35,6 +36,7 @@ prettyprint:
 		t/120-read-var-from-wren-t.vala \
 		t/130-call-wren-t.vala \
 		t/140-roundtrip-data-t.vala \
+		t/200-expose-class-t.vala \
 		$(EOL)
 
 phony += cleanwren

@@ -56,24 +56,11 @@ void test_misc()  // for coverage
   assert_true(vm.has_variable("main", "answer"));
 }
 
-void test_userdata()
-{
-  var vm = new Wren.VMV();
-  assert_nonnull(vm);
-
-  string test = "Yowza";
-  vm.set_user_data((void *)test);
-
-  string got = (string)vm.get_user_data();
-  assert_cmpstr(got, EQ, test);
-}
-
 public static int main(string[] args)
 {
   Test.init(ref args);
   Test.set_nonfatal_assertions();
   Test.add_func("/100-vmv/instantiate", test_instantiate);
   Test.add_func("/100-vmv/misc", test_misc);
-  Test.add_func("/100-vmv/userdata", test_userdata);
   return Test.run();
 }

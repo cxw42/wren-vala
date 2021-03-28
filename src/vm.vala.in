@@ -57,6 +57,21 @@ namespace Wren {
   [CCode(cheader_filename="libwren-vala-@APIVER@.h,@WREN_HEADER@")]
   public class VMV : Object
   {
+    // --- Instance data ------------------------------------------
+
+    /** The wrapped Wren VM */
+    private VM vm = null;
+
+    /**
+     * Trampolines
+     *
+     * Has to be public, but if you use it, your bindings will break!
+     */
+    [CCode(notify = false)]
+    public Tramp tramp_ { get; private set; default = new Tramp(); }
+
+    // --- VM functions -------------------------------------------
+
     // TODO? provide VMV wrappers for the writeFn and errorFn?
 
     /** Print a message to stdout */
@@ -87,28 +102,42 @@ namespace Wren {
       }
     }
 
-    /** The wrapped Wren VM */
-    private VM vm = null;
+    /** Bind a foreign class */
+    private static ForeignClassMethods bindForeignClass(VM vm, string module, string className)
+    {
+      var self = vm.GetUserData() as VMV;
+      debug("bindForeignClass %s!%s in %p\n", module, className, self);
+      return self.tramp_.get_functions(module, className);
+    }
+
+    // --- Constructors -------------------------------------------
 
     /** Create a VM with a particular configuration */
     public VMV.with_configuration(Configuration? config = null)
     {
       vm = new VM(config);
+      vm.SetUserData(this);
     }
 
+    // TODO support gobject-style construction?
     /**
      * Create a VM with a default configuration.
      *
      * The default is the Wren default configuration, plus a writeFn and
-     * an errorFn modified from wren-pkg/wren/example/embedding/main.c.
+     * an errorFn modified from wren-pkg/wren/example/embedding/main.c,
+     * and binding functions that support expose_class().
      */
     public VMV()
     {
       var conf = Wren.Configuration.default ();
       conf.writeFn = writeFn;
       conf.errorFn = errorFn;
+      conf.bindForeignClassFn = bindForeignClass;
       this.with_configuration(conf);
     }
+
+    // --- Low-level interface ------------------------------------
+    // This section exposes the Wren.VM methods.
 
     public void collect_garbage() {
       vm.CollectGarbage();
@@ -160,7 +189,7 @@ namespace Wren {
       vm.EnsureSlots(num_slots);
     }
 
-    public Type get_slot_type(int slot)
+    public Wren.Type get_slot_type(int slot)
     {
       return vm.GetSlotType(slot);
     }
@@ -295,13 +324,48 @@ namespace Wren {
       vm.AbortFiber(slot);
     }
 
-    public void *get_user_data()
+    // Userdata: private because VMV takes this for its own use.
+#if 0
+    private void *get_user_data()
     {
       return vm.GetUserData();
     }
-    public void set_user_data(void *user_data)
+    private void set_user_data(void *user_data)
     {
       vm.SetUserData(user_data);
+    }
+#endif
+
+    // --- High-level interface -----------------------------------
+    // This section binds classes as a whole between Vala and Wren
+
+    /**
+     * Expose class T to Wren, as part of module `mod`
+     *
+     * @param mod The module to add the class to (default "main").
+     */
+    public InterpretResult expose_class<T>(string mod = "main")
+    {
+      StringBuilder wren = new StringBuilder(); // source to be interpreted
+      var type = typeof(T);
+      assert(!type.is_abstract()); // TODO more sophisticated error handling
+      assert(type.is_instantiatable());
+
+      // ObjectClass ocl = (ObjectClass)type.class_ref();
+
+      wren.append_printf("foreign class %s {\n", type.name());
+
+      // foreach (ParamSpec spec in ocl.list_properties()) {
+      // TODO print ("%s\n", spec.get_name ());
+      // }
+
+      wren.append("construct new() {}\n");
+      wren.append("}\n");
+      debug("Wren source: >>%s<<", wren.str);
+
+      tramp_.add_type(mod, type.name(), type);
+
+      return interpret(mod, wren.str);
     }
 
   } // class VMV

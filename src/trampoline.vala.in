@@ -1,0 +1,539 @@
+// @configure_input@
+
+// trampoline.vala: Functions for class bindings
+// Part of wren-vala
+// By Christopher White <cxwembedded@gmail.com>
+// SPDX-License-Identifier: MIT
+
+[CCode(cheader_filename="libwren-vala-@APIVER@.h,@WREN_HEADER@")]
+namespace Wren {
+
+  /**
+   * Trampolines for allocating Object subclasses.
+   *
+   * Requires that the vm userdata be an Object subclass with a tramp_
+   * property returning an instance of this class.
+   * */
+  [CCode(cheader_filename="libwren-vala-@APIVER@.h,@WREN_HEADER@")]
+  public class Tramp : Object {
+
+    /**
+     * Classes exposed to Wren
+     *
+     * Maps from {@link hash_key()} retval to index in {@link types}.
+     */
+    HashTable<string, uint> classes = new HashTable<string, uint>(str_hash, str_equal);
+
+    /**
+     * Types we can instantiate
+     *
+     * Indices map 1-1 to {@link allocators}.
+     */
+    public Array<GLib.Type> types;
+
+    /**
+     * Functions that instantiate those types.
+     *
+     * Indices map 1-1 to {@link types}.
+     */
+    public Array<ForeignMethodFn> allocators;
+
+    // --- Public interface ---------------------------------------
+
+    /** Make a hash key for a class */
+    public string hash_key(string module, string className)
+    {
+      return @"$module!$className";
+    }
+
+    /** Return the functions for a type */
+    public ForeignClassMethods get_functions(string module, string className)
+    {
+      ForeignClassMethods retval = {};
+
+      var key = hash_key(module, className);
+      if(classes.contains(key)) {
+        uint idx = classes[key];
+        retval.allocate = allocators.data[idx];
+        retval.finalize = deallocateObject;
+        debug("Functions for %s @ %u: %p, %p", key, idx, &retval.allocate, &retval.finalize);
+      }
+      return retval;
+    }
+
+    /**
+     * Add a type.
+     *
+     * Idempotent.
+     */
+    public void add_type(string module, string className, GLib.Type type)
+    {
+      var key = hash_key(module, className);
+
+      if(classes.contains(key)) {
+        return;
+      }
+
+      types.append_val(type);
+      classes[key] = types.length - 1;
+      assert(types.length <= allocators.length);  // TODO better error handling
+      debug("Class %s now at index %u", key, classes[key]);
+    }
+
+    // --- Allocating and deallocating instances ------------------
+
+    /**
+     * Instantiate a foreign class
+     *
+     * @param vm    The Wren VM to use
+     * @param index The index in {@link types} and {@link allocators} to use.
+     */
+    private static void instantiate(VM vm, uint index)
+    {
+      debug("instantiate: vm %p, index %u", vm, index);
+
+      // Get to a Tramp instance
+      var userdata = vm.GetUserData() as Object;
+      assert(userdata != null);  // TODO better error handling
+      Value self_value = Value(typeof(Tramp));
+      userdata.get_property("tramp_", ref self_value);
+      var self = self_value.get_object() as Tramp;
+      assert(self != null);
+      assert(index < self.types.length);
+
+      // Do the work!
+      var type = self.types.data[index];
+      var instance = Object.new(type);
+
+      // ref() to counteract the automatic unref() at the end of this function
+      instance.ref ();
+
+      // Give the instance to Wren
+      unowned Object **ppobject = (Object **)vm.SetSlotNewForeign(0, 0, sizeof(Object));
+      *ppobject = instance;
+
+      debug("index %u: %p", index, instance);
+    }
+
+    /** Free a GObject instance */
+    private static void deallocateObject(void *data)
+    {
+      unowned Object **ppobject = (Object **)data;
+      debug("deallocateObject %p\n", ppobject);
+      if(ppobject != null) {
+        unowned Object *obj = *ppobject;
+        obj->unref();
+      }
+    }
+
+    // This is incredibly tedious.  We hold 100 functions and pointers to them.
+    private static void i0(VM vm) {
+      instantiate(vm, 0);
+    }
+    private static void i1(VM vm) {
+      instantiate(vm, 1);
+    }
+    private static void i2(VM vm) {
+      instantiate(vm, 2);
+    }
+    private static void i3(VM vm) {
+      instantiate(vm, 3);
+    }
+    private static void i4(VM vm) {
+      instantiate(vm, 4);
+    }
+    private static void i5(VM vm) {
+      instantiate(vm, 5);
+    }
+    private static void i6(VM vm) {
+      instantiate(vm, 6);
+    }
+    private static void i7(VM vm) {
+      instantiate(vm, 7);
+    }
+    private static void i8(VM vm) {
+      instantiate(vm, 8);
+    }
+    private static void i9(VM vm) {
+      instantiate(vm, 9);
+    }
+    private static void i10(VM vm) {
+      instantiate(vm, 10);
+    }
+    private static void i11(VM vm) {
+      instantiate(vm, 11);
+    }
+    private static void i12(VM vm) {
+      instantiate(vm, 12);
+    }
+    private static void i13(VM vm) {
+      instantiate(vm, 13);
+    }
+    private static void i14(VM vm) {
+      instantiate(vm, 14);
+    }
+    private static void i15(VM vm) {
+      instantiate(vm, 15);
+    }
+    private static void i16(VM vm) {
+      instantiate(vm, 16);
+    }
+    private static void i17(VM vm) {
+      instantiate(vm, 17);
+    }
+    private static void i18(VM vm) {
+      instantiate(vm, 18);
+    }
+    private static void i19(VM vm) {
+      instantiate(vm, 19);
+    }
+    private static void i20(VM vm) {
+      instantiate(vm, 20);
+    }
+    private static void i21(VM vm) {
+      instantiate(vm, 21);
+    }
+    private static void i22(VM vm) {
+      instantiate(vm, 22);
+    }
+    private static void i23(VM vm) {
+      instantiate(vm, 23);
+    }
+    private static void i24(VM vm) {
+      instantiate(vm, 24);
+    }
+    private static void i25(VM vm) {
+      instantiate(vm, 25);
+    }
+    private static void i26(VM vm) {
+      instantiate(vm, 26);
+    }
+    private static void i27(VM vm) {
+      instantiate(vm, 27);
+    }
+    private static void i28(VM vm) {
+      instantiate(vm, 28);
+    }
+    private static void i29(VM vm) {
+      instantiate(vm, 29);
+    }
+    private static void i30(VM vm) {
+      instantiate(vm, 30);
+    }
+    private static void i31(VM vm) {
+      instantiate(vm, 31);
+    }
+    private static void i32(VM vm) {
+      instantiate(vm, 32);
+    }
+    private static void i33(VM vm) {
+      instantiate(vm, 33);
+    }
+    private static void i34(VM vm) {
+      instantiate(vm, 34);
+    }
+    private static void i35(VM vm) {
+      instantiate(vm, 35);
+    }
+    private static void i36(VM vm) {
+      instantiate(vm, 36);
+    }
+    private static void i37(VM vm) {
+      instantiate(vm, 37);
+    }
+    private static void i38(VM vm) {
+      instantiate(vm, 38);
+    }
+    private static void i39(VM vm) {
+      instantiate(vm, 39);
+    }
+    private static void i40(VM vm) {
+      instantiate(vm, 40);
+    }
+    private static void i41(VM vm) {
+      instantiate(vm, 41);
+    }
+    private static void i42(VM vm) {
+      instantiate(vm, 42);
+    }
+    private static void i43(VM vm) {
+      instantiate(vm, 43);
+    }
+    private static void i44(VM vm) {
+      instantiate(vm, 44);
+    }
+    private static void i45(VM vm) {
+      instantiate(vm, 45);
+    }
+    private static void i46(VM vm) {
+      instantiate(vm, 46);
+    }
+    private static void i47(VM vm) {
+      instantiate(vm, 47);
+    }
+    private static void i48(VM vm) {
+      instantiate(vm, 48);
+    }
+    private static void i49(VM vm) {
+      instantiate(vm, 49);
+    }
+    private static void i50(VM vm) {
+      instantiate(vm, 50);
+    }
+    private static void i51(VM vm) {
+      instantiate(vm, 51);
+    }
+    private static void i52(VM vm) {
+      instantiate(vm, 52);
+    }
+    private static void i53(VM vm) {
+      instantiate(vm, 53);
+    }
+    private static void i54(VM vm) {
+      instantiate(vm, 54);
+    }
+    private static void i55(VM vm) {
+      instantiate(vm, 55);
+    }
+    private static void i56(VM vm) {
+      instantiate(vm, 56);
+    }
+    private static void i57(VM vm) {
+      instantiate(vm, 57);
+    }
+    private static void i58(VM vm) {
+      instantiate(vm, 58);
+    }
+    private static void i59(VM vm) {
+      instantiate(vm, 59);
+    }
+    private static void i60(VM vm) {
+      instantiate(vm, 60);
+    }
+    private static void i61(VM vm) {
+      instantiate(vm, 61);
+    }
+    private static void i62(VM vm) {
+      instantiate(vm, 62);
+    }
+    private static void i63(VM vm) {
+      instantiate(vm, 63);
+    }
+    private static void i64(VM vm) {
+      instantiate(vm, 64);
+    }
+    private static void i65(VM vm) {
+      instantiate(vm, 65);
+    }
+    private static void i66(VM vm) {
+      instantiate(vm, 66);
+    }
+    private static void i67(VM vm) {
+      instantiate(vm, 67);
+    }
+    private static void i68(VM vm) {
+      instantiate(vm, 68);
+    }
+    private static void i69(VM vm) {
+      instantiate(vm, 69);
+    }
+    private static void i70(VM vm) {
+      instantiate(vm, 70);
+    }
+    private static void i71(VM vm) {
+      instantiate(vm, 71);
+    }
+    private static void i72(VM vm) {
+      instantiate(vm, 72);
+    }
+    private static void i73(VM vm) {
+      instantiate(vm, 73);
+    }
+    private static void i74(VM vm) {
+      instantiate(vm, 74);
+    }
+    private static void i75(VM vm) {
+      instantiate(vm, 75);
+    }
+    private static void i76(VM vm) {
+      instantiate(vm, 76);
+    }
+    private static void i77(VM vm) {
+      instantiate(vm, 77);
+    }
+    private static void i78(VM vm) {
+      instantiate(vm, 78);
+    }
+    private static void i79(VM vm) {
+      instantiate(vm, 79);
+    }
+    private static void i80(VM vm) {
+      instantiate(vm, 80);
+    }
+    private static void i81(VM vm) {
+      instantiate(vm, 81);
+    }
+    private static void i82(VM vm) {
+      instantiate(vm, 82);
+    }
+    private static void i83(VM vm) {
+      instantiate(vm, 83);
+    }
+    private static void i84(VM vm) {
+      instantiate(vm, 84);
+    }
+    private static void i85(VM vm) {
+      instantiate(vm, 85);
+    }
+    private static void i86(VM vm) {
+      instantiate(vm, 86);
+    }
+    private static void i87(VM vm) {
+      instantiate(vm, 87);
+    }
+    private static void i88(VM vm) {
+      instantiate(vm, 88);
+    }
+    private static void i89(VM vm) {
+      instantiate(vm, 89);
+    }
+    private static void i90(VM vm) {
+      instantiate(vm, 90);
+    }
+    private static void i91(VM vm) {
+      instantiate(vm, 91);
+    }
+    private static void i92(VM vm) {
+      instantiate(vm, 92);
+    }
+    private static void i93(VM vm) {
+      instantiate(vm, 93);
+    }
+    private static void i94(VM vm) {
+      instantiate(vm, 94);
+    }
+    private static void i95(VM vm) {
+      instantiate(vm, 95);
+    }
+    private static void i96(VM vm) {
+      instantiate(vm, 96);
+    }
+    private static void i97(VM vm) {
+      instantiate(vm, 97);
+    }
+    private static void i98(VM vm) {
+      instantiate(vm, 98);
+    }
+    private static void i99(VM vm) {
+      instantiate(vm, 99);
+    }
+
+    // --- Constructor --------------------------------------------
+
+    public Tramp() {
+      types = new Array<GLib.Type>();
+      allocators = new Array<ForeignMethodFn>();
+      allocators.set_size(100);
+      allocators.data[0] = i0;
+      allocators.data[1] = i1;
+      allocators.data[2] = i2;
+      allocators.data[3] = i3;
+      allocators.data[4] = i4;
+      allocators.data[5] = i5;
+      allocators.data[6] = i6;
+      allocators.data[7] = i7;
+      allocators.data[8] = i8;
+      allocators.data[9] = i9;
+      allocators.data[10] = i10;
+      allocators.data[11] = i11;
+      allocators.data[12] = i12;
+      allocators.data[13] = i13;
+      allocators.data[14] = i14;
+      allocators.data[15] = i15;
+      allocators.data[16] = i16;
+      allocators.data[17] = i17;
+      allocators.data[18] = i18;
+      allocators.data[19] = i19;
+      allocators.data[20] = i20;
+      allocators.data[21] = i21;
+      allocators.data[22] = i22;
+      allocators.data[23] = i23;
+      allocators.data[24] = i24;
+      allocators.data[25] = i25;
+      allocators.data[26] = i26;
+      allocators.data[27] = i27;
+      allocators.data[28] = i28;
+      allocators.data[29] = i29;
+      allocators.data[30] = i30;
+      allocators.data[31] = i31;
+      allocators.data[32] = i32;
+      allocators.data[33] = i33;
+      allocators.data[34] = i34;
+      allocators.data[35] = i35;
+      allocators.data[36] = i36;
+      allocators.data[37] = i37;
+      allocators.data[38] = i38;
+      allocators.data[39] = i39;
+      allocators.data[40] = i40;
+      allocators.data[41] = i41;
+      allocators.data[42] = i42;
+      allocators.data[43] = i43;
+      allocators.data[44] = i44;
+      allocators.data[45] = i45;
+      allocators.data[46] = i46;
+      allocators.data[47] = i47;
+      allocators.data[48] = i48;
+      allocators.data[49] = i49;
+      allocators.data[50] = i50;
+      allocators.data[51] = i51;
+      allocators.data[52] = i52;
+      allocators.data[53] = i53;
+      allocators.data[54] = i54;
+      allocators.data[55] = i55;
+      allocators.data[56] = i56;
+      allocators.data[57] = i57;
+      allocators.data[58] = i58;
+      allocators.data[59] = i59;
+      allocators.data[60] = i60;
+      allocators.data[61] = i61;
+      allocators.data[62] = i62;
+      allocators.data[63] = i63;
+      allocators.data[64] = i64;
+      allocators.data[65] = i65;
+      allocators.data[66] = i66;
+      allocators.data[67] = i67;
+      allocators.data[68] = i68;
+      allocators.data[69] = i69;
+      allocators.data[70] = i70;
+      allocators.data[71] = i71;
+      allocators.data[72] = i72;
+      allocators.data[73] = i73;
+      allocators.data[74] = i74;
+      allocators.data[75] = i75;
+      allocators.data[76] = i76;
+      allocators.data[77] = i77;
+      allocators.data[78] = i78;
+      allocators.data[79] = i79;
+      allocators.data[80] = i80;
+      allocators.data[81] = i81;
+      allocators.data[82] = i82;
+      allocators.data[83] = i83;
+      allocators.data[84] = i84;
+      allocators.data[85] = i85;
+      allocators.data[86] = i86;
+      allocators.data[87] = i87;
+      allocators.data[88] = i88;
+      allocators.data[89] = i89;
+      allocators.data[90] = i90;
+      allocators.data[91] = i91;
+      allocators.data[92] = i92;
+      allocators.data[93] = i93;
+      allocators.data[94] = i94;
+      allocators.data[95] = i95;
+      allocators.data[96] = i96;
+      allocators.data[97] = i97;
+      allocators.data[98] = i98;
+      allocators.data[99] = i99;
+    } // ctor
+  }
+}
