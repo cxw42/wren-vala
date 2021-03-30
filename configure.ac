@@ -190,12 +190,17 @@ AC_CONFIG_FILES([
     Makefile
     doc/Makefile
     src/Makefile
-    src/basics.vapi
-    src/vm.vala
     t/Makefile
     t/common.sh
     wren-pkg/Makefile
 ])
+
+dnl Source files: make them RO
+AC_CONFIG_FILES([src/basics.vapi], [chmod a-w src/basics.vapi])
+AC_CONFIG_FILES([src/marshal.vala], [chmod a-w src/marshal.vala])
+AC_CONFIG_FILES([src/trampoline.vala], [chmod a-w src/trampoline.vala])
+AC_CONFIG_FILES([src/vm.vala], [chmod a-w src/vm.vala])
+AC_CONFIG_FILES([src/wrennull.c], [chmod a-w src/wrennull.c])
 
 dnl pkg-config files: name them after the Wren version
 AC_CONFIG_FILES([wren-pkg/libwren-"${APIVER}".pc:wren-pkg/libwren.pc.in], [], [APIVER=$APIVER])

@@ -24,22 +24,46 @@ EXTRA_DIST = \
 distcheck-hook:
 	chmod -R u+w $(distdir)
 
+# --- Code hygiene -------------------------------------------
+
 phony += prettyprint
 prettyprint:
 	-$(AM_V_GEN)uncrustify -l VALA -c $(top_srcdir)/.uncrustifyrc --replace \
 		src/basics.vapi.in \
+		src/marshal.vala.in \
+		src/trampoline.vala.in \
 		src/vm.vala.in \
+		src/wrennull.c.in \
 		t/000-sanity-t.vala \
+		t/105-tramp-t.vala \
 		t/100-vmv-t.vala \
 		t/110-hello-world-s.vala \
 		t/120-read-var-from-wren-t.vala \
 		t/130-call-wren-t.vala \
 		t/140-roundtrip-data-t.vala \
+		t/150-marshal-t.vala \
+		t/200-expose-class-t.vala \
 		$(EOL)
+
+phony += p
+p: prettyprint
+	-ctags -R
 
 phony += cleanwren
 cleanwren:
 	-cd wren-pkg/wren && git clean -dfx
+
+# --- Testing ------------------------------------------------
+
+# Shortcuts for tests
+phony += test
+test: check
+
+phony += build-tests
+build-tests: all
+	+$(MAKE) -C t $@
+
+# --- Coverage -----------------------------------------------
 
 # Used by coverage.sh --- remove the existing code-coverage data.
 remove-code-coverage-data:

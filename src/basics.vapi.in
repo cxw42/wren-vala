@@ -44,6 +44,7 @@ namespace Wren {
   [CCode(has_target = false)]
   public delegate void LoadModuleCompleteFn(VM vm, string name, LoadModuleResult result);
 
+  [SimpleType]
   public struct LoadModuleResult
   {
     string source;
@@ -96,6 +97,8 @@ namespace Wren {
   public delegate void ErrorFn(VM vm, ErrorType type, string? module,
     int line, string message);
 
+  // Has to be a SimpleType so it can be returned by value from functions.
+  [SimpleType]
   public struct ForeignClassMethods
   {
     ForeignMethodFn allocate;
@@ -177,7 +180,7 @@ namespace Wren {
     public extern int GetSlotCount();
     public extern void EnsureSlots(int numSlots);
 
-    public extern Type GetSlotType(int slot);
+    public extern Wren.Type GetSlotType(int slot);
     public extern bool GetSlotBool(int slot);
     public extern unowned uint8[] GetSlotBytes(int slot);
     public extern double GetSlotDouble(int slot);
