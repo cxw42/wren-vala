@@ -8,24 +8,15 @@ include $(top_srcdir)/rules.mk
 
 EXTRA_DIST = .gitignore
 
-pkgconfig_DATA =
 include_HEADERS =
 lib_LTLIBRARIES =
 
 # === Headers ===========================================================
 
-if WREN_INSTALL
-
-pkgconfig_DATA += \
-	libwren-${APIVER}.pc \
-	$(EOL)
-
 include_HEADERS += \
 	wren-${APIVER}.h \
 	wren-${APIVER}.hpp \
 	$(EOL)
-
-endif
 
 wren-${APIVER}.h: wren/src/include/wren.h
 	cp "$<" "$@"
@@ -41,11 +32,9 @@ CLEANFILES = \
 # === Libraries =========================================================
 # Do include all the optional features.
 
-if WREN_INSTALL
 lib_LTLIBRARIES += \
 	libwren-@APIVER@.la \
 	$(EOL)
-endif
 
 libwren_@APIVER@_la_CFLAGS = \
 	-I$(srcdir)/wren/src/vm -I$(srcdir)/wren/src/optional \
@@ -82,11 +71,11 @@ libwren_@APIVER@_la_SOURCES = \
 	wren/src/optional/wren_opt_random.wren.inc \
 	$(EOL)
 
-# === Cleanup ===========================================================
-# When not installing Wren, don't leave deps files lying around ---
-# we don't need them, and they dirty the repo.
+# === Other Wren files ==================================================
 
-if !WREN_INSTALL
-all-local:
-	-find $(builddir) -name .deps -exec rm -rf {} +
-endif
+EXTRA_DIST += \
+	wren/AUTHORS \
+	wren/CHANGELOG.md \
+	wren/LICENSE \
+	wren/README.md \
+	$(EOL)

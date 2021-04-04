@@ -13,7 +13,7 @@ Version: @PACKAGE_VERSION@
 Requires: libwren-@PACKAGE_VERSION@ @AX_PACKAGE_REQUIRES@
 Requires.private: @AX_PACKAGE_REQUIRES_PRIVATE@
 
-Libs: -L${libdir} -l@PACKAGE_TARNAME@
+Libs: -L${libdir} -l@PACKAGE_TARNAME@ -lwren-@APIVER@
 Cflags: -I${includedir}
 
 # vi: set ft=config: #

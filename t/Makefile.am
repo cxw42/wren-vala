@@ -39,11 +39,12 @@ LOCAL_CFLAGS = \
 LDADD = \
 	-L$(top_builddir)/src \
 	-lwren-vala \
+	-L$(top_builddir)/wren-pkg \
+	-lwren-@APIVER@ \
 	$(EOL)
 
 # --- Test definitions ---
 
-if !WREN_INSTALL
 test_programs += \
 	000-sanity-t \
 	100-vmv-t \
@@ -69,5 +70,3 @@ dist_test_extra_scripts += \
 
 # Make sure common.sh gets remade if necessary before running tests
 all-local: common.sh
-
-endif

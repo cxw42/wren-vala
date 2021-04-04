@@ -47,7 +47,7 @@ prettyprint:
 
 phony += p
 p: prettyprint
-	-ctags -R
+	-ctags -R --exclude='doc/*'
 
 phony += cleanwren
 cleanwren:

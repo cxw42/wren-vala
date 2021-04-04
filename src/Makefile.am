@@ -12,19 +12,15 @@ include_HEADERS =
 
 # === pkg-config ===
 
-if !WREN_INSTALL
 pkgconfig_DATA += \
 	libwren-vala-@APIVER@.pc \
 	$(EOL)
-endif
 
 DISTCLEANFILES = $(pkgconfig_DATA)
 
 # === Library ===
 
-if !WREN_INSTALL
 lib_LTLIBRARIES += libwren-vala.la
-endif
 
 libwren_vala_la_SOURCES = \
 	basics.vapi \
@@ -33,6 +29,10 @@ libwren_vala_la_SOURCES = \
 	trampoline.vala \
 	vm.vala \
 	wrennull.c \
+	$(EOL)
+
+libwren_vala_la_LIBADD = \
+	$(top_builddir)/wren-pkg/libwren-@APIVER@.la \
 	$(EOL)
 
 libwren_vala_la_VALAFLAGS = \
@@ -49,8 +49,6 @@ libwren_vala_la_VALAFLAGS = \
 libwren-vala-@APIVER@.vapi: libwren-vala.vapi basics.vapi
 	cat $^ > $@
 
-if !WREN_INSTALL
 dist_vapi_DATA += libwren-vala-@APIVER@.vapi
 DISTCLEANFILES += libwren-vala-@APIVER@.vapi
 include_HEADERS += libwren-vala-@APIVER@.h
-endif

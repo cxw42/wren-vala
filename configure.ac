@@ -55,65 +55,16 @@ PKG_INSTALLDIR
 AC_SUBST([APIVER], [$WREN_VERSION])  dnl Just to reduce typing :)
 AC_SUBST([APIVERSH], [AS_TR_SH([$WREN_VERSION])])
 
-dnl === Installing Wren from wren-pkg/ ====================================
+dnl === Wren ==============================================================
 
-AC_ARG_ENABLE([wren-install],
-  AS_HELP_STRING([--enable-wren-install],
-    [Build and install Wren itself INSTEAD OF wren-vala.  You will need to re-run
-     configure without this option to install wren-vala.])
-)
-AM_CONDITIONAL([WREN_INSTALL], [test "x$enable_wren_install" '=' 'xyes'])
+AC_CHECK_FILE([$srcdir/wren-pkg/wren/README.md], [],
+  [AC_MSG_ERROR([You asked me to install Wren but the source tree does not appear to be full.  Try 'git submodule update --init --recursive" if you have not yet done so.])])
 
-dnl Set up for the Wren compilation
-whichtarget='wren-vala'
-AM_COND_IF([WREN_INSTALL],
-  [
-    dnl Sanity check
-    AC_CHECK_FILE([wren-pkg/wren/README.md], [],
-      [AC_MSG_ERROR([You asked me to install Wren but the source tree does not appear to be full.  Try 'git submodule update --init --recursive" if you have not yet done so.])])
-
-    whichtarget='Wren itself (after installing, re-run ./configure to build wren-vala)'
-  ]
-)
-
-dnl === Check for Wren ====================================================
-dnl Don't use pkg-config since Wren itself does not provide a .pc file.
-dnl However, we could be using a hand-installed Wren or a Wren we installed
-dnl using versioned names.
-
-wren_exists='yes'
-AC_SUBST([WREN_HEADER])
-AC_CHECK_HEADERS([wren.h "wren-$APIVER.h"],
-  [
-    WREN_HEADER="$ac_header"
-    break
-  ],
-)
-AS_IF([test "x$WREN_HEADER" '=' 'x'],
-  [
-    dnl No wren.h found
-    AC_MSG_WARN([Could not find wren.h])
-    wren_exists=''
-  ]
-)
+AC_SUBST([WREN_HEADER], [wren-$APIVER.h])
 
 AC_SEARCH_LIBS([log2], [m],
   [], [
-    AC_MSG_WARN([Could not find -lm])
-  ]
-)
-
-AC_SEARCH_LIBS([wrenNewVM], [wren "wren-$APIVER"],
-  [], [
-    AC_MSG_WARN([Could not find -lwren])
-    wren_exists=''
-  ],
-  [-lm]
-)
-
-AS_IF([ test "x$wren_exists" '!=' 'xyes' && test "x$enable_wren_install" '!=' 'xyes' ],
-  [
-    AC_MSG_ERROR([I could not find Wren on your system.  Try "$0 --enable-wren-install" to build and install a Wren package.])
+    AC_MSG_WARN([Could not find -lm, which Wren requires])
   ]
 )
 
@@ -195,7 +146,7 @@ AC_CONFIG_FILES([
     wren-pkg/Makefile
 ])
 
-dnl Source files: make them RO
+dnl Source files: make the generated files RO
 AC_CONFIG_FILES([src/basics.vapi], [chmod a-w src/basics.vapi])
 AC_CONFIG_FILES([src/marshal.vala], [chmod a-w src/marshal.vala])
 AC_CONFIG_FILES([src/trampoline.vala], [chmod a-w src/trampoline.vala])
@@ -203,14 +154,7 @@ AC_CONFIG_FILES([src/vm.vala], [chmod a-w src/vm.vala])
 AC_CONFIG_FILES([src/wrennull.c], [chmod a-w src/wrennull.c])
 
 dnl pkg-config files: name them after the Wren version
-AC_CONFIG_FILES([wren-pkg/libwren-"${APIVER}".pc:wren-pkg/libwren.pc.in], [], [APIVER=$APIVER])
 AC_CONFIG_FILES([src/libwren-vala-"${APIVER}".pc:src/libwren-vala.pc.in], [], [APIVER=$APIVER])
-
-dnl Tell the user what is going to happen
-AC_CONFIG_COMMANDS([notify],
-  [echo "*** Ready to build $whichtarget ***"],
-  [whichtarget="$whichtarget"]
-)
 
 AM_SILENT_RULES([yes])
 AC_OUTPUT

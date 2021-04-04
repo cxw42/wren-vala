@@ -102,7 +102,9 @@ namespace Wren {
   public struct ForeignClassMethods
   {
     ForeignMethodFn allocate;
+    void *allocateUserData;
     FinalizerFn finalize;
+    void *finalizeUserData;
   }
 
   [CCode(has_target = false)]

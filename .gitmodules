@@ -1,3 +1,4 @@
 [submodule "wren-pkg/wren"]
+	branch = wren-vala-2
 	path = wren-pkg/wren
-	url = https://github.com/wren-lang/wren.git
+	url = https://github.com/cxw42/wren.git
