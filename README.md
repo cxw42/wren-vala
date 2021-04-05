@@ -49,6 +49,8 @@ the first three digits.
 - Code coverage of the test suite: run `./coverage.sh`, then open
   `wren-vala-coverage/index.html` in a Web browser.  Requires gcov(1) and
   lcov(1).
+  - Note: You can't run `make distcheck` if you're configured for
+    coverage.  Just re-run `./configure` to go back to non-coverage mode.
 - Documentation: run `make html`, then open `doc/valadoc/index.html` in a
   Web browser.
 

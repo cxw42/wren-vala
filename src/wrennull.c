@@ -1,5 +1,3 @@
-// @configure_input@
-
 // wrennull.c: Wren's null type, as a GType
 //
 // By Christopher White <cxwembedded@gmail.com>
@@ -8,8 +6,7 @@
 
 #include <glib.h>
 #include <glib-object.h>
-#include "libwren-vala-@APIVER@.h"
-#include "@WREN_HEADER@"
+#include "wren-vala-merged.h"
 
 G_BEGIN_DECLS
 

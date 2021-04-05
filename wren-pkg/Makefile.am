@@ -8,31 +8,13 @@ include $(top_srcdir)/rules.mk
 
 EXTRA_DIST = .gitignore
 
-include_HEADERS =
-lib_LTLIBRARIES =
-
-# === Headers ===========================================================
-
-include_HEADERS += \
-	wren-${APIVER}.h \
-	wren-${APIVER}.hpp \
-	$(EOL)
-
-wren-${APIVER}.h: wren/src/include/wren.h
-	cp "$<" "$@"
-
-wren-${APIVER}.hpp: wren/src/include/wren.hpp
-	cp "$<" "$@"
-
-CLEANFILES = \
-	wren-${APIVER}.h \
-	wren-${APIVER}.hpp \
-	$(EOL)
+noinst_LTLIBRARIES =
 
 # === Libraries =========================================================
 # Do include all the optional features.
+# TODO make the optional features configure-time options
 
-lib_LTLIBRARIES += \
+noinst_LTLIBRARIES += \
 	libwren-@APIVER@.la \
 	$(EOL)
 
@@ -42,6 +24,9 @@ libwren_@APIVER@_la_CFLAGS = \
 	$(AM_CFLAGS) \
 	$(EOL)
 
+# Sources.  Note that we list both our local copies of the headers and the
+# Wren headers (wren/src/include/*).  The local copies depend on the Wren
+# headers above.  This way everything gets disted and depped.
 libwren_@APIVER@_la_SOURCES = \
 	wren/src/include/wren.h \
 	wren/src/include/wren.hpp \

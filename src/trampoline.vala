@@ -1,11 +1,9 @@
-// @configure_input@
-
 // trampoline.vala: Functions for class bindings
 // Part of wren-vala
 // By Christopher White <cxwembedded@gmail.com>
 // SPDX-License-Identifier: MIT
 
-[CCode(cheader_filename="libwren-vala-@APIVER@.h,@WREN_HEADER@")]
+[CCode(cheader_filename="wren-vala-merged.h")]
 namespace Wren {
 
   /**
@@ -15,7 +13,7 @@ namespace Wren {
    * * has a tramp_ property returning an instance of this class; and
    * * implements {@link Wren.HasMethods}
    * */
-  [CCode(cheader_filename="libwren-vala-@APIVER@.h,@WREN_HEADER@")]
+  [CCode(cheader_filename="wren-vala-merged.h")]
   public class Tramp : Object {
 
     /**

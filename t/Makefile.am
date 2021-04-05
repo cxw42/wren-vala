@@ -38,9 +38,7 @@ LOCAL_CFLAGS = \
 # Libs: -lwren is in LIBS, which is included by default.
 LDADD = \
 	-L$(top_builddir)/src \
-	-lwren-vala \
-	-L$(top_builddir)/wren-pkg \
-	-lwren-@APIVER@ \
+	-lwren-vala-@APIVER@ \
 	$(EOL)
 
 # --- Test definitions ---

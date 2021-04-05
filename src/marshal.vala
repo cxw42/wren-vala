@@ -1,12 +1,10 @@
-// @configure_input@
-
 // marshal.vala: Wren<->Vala marshalling
 //
 // By Christopher White <cxwembedded@gmail.com>
 // Copyright (c) 2021 Christopher White.  All rights reserved.
 // SPDX-License-Identifier: MIT
 
-[CCode(cheader_filename="libwren-vala-@APIVER@.h,@WREN_HEADER@")]
+[CCode(cheader_filename="wren-vala-merged.h")]
 namespace Wren {
 
   /**
@@ -43,7 +41,7 @@ namespace Wren {
   }
   private bool static_init_done = false;
 
-  [CCode(cheader_filename="libwren-vala-@APIVER@.h,@WREN_HEADER@")]
+  [CCode(cheader_filename="wren-vala-merged.h")]
   namespace Marshal {
 
     public errordomain MarshalError {

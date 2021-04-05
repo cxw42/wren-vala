@@ -53,6 +53,7 @@ AC_MSG_NOTICE([Wren version $WREN_VERSION])
 
 PKG_INSTALLDIR
 AC_SUBST([APIVER], [$WREN_VERSION])  dnl Just to reduce typing :)
+AC_DEFINE_UNQUOTED([APIVER],["$WREN_VERSION"], [Wren API version])
 AC_SUBST([APIVERSH], [AS_TR_SH([$WREN_VERSION])])
 
 dnl === Wren ==============================================================
@@ -60,7 +61,7 @@ dnl === Wren ==============================================================
 AC_CHECK_FILE([$srcdir/wren-pkg/wren/README.md], [],
   [AC_MSG_ERROR([You asked me to install Wren but the source tree does not appear to be full.  Try 'git submodule update --init --recursive" if you have not yet done so.])])
 
-AC_SUBST([WREN_HEADER], [wren-$APIVER.h])
+AC_SUBST([MERGED_HEADER], [wren-vala-$APIVER.h])
 
 AC_SEARCH_LIBS([log2], [m],
   [], [
@@ -145,13 +146,6 @@ AC_CONFIG_FILES([
     t/common.sh
     wren-pkg/Makefile
 ])
-
-dnl Source files: make the generated files RO
-AC_CONFIG_FILES([src/basics.vapi], [chmod a-w src/basics.vapi])
-AC_CONFIG_FILES([src/marshal.vala], [chmod a-w src/marshal.vala])
-AC_CONFIG_FILES([src/trampoline.vala], [chmod a-w src/trampoline.vala])
-AC_CONFIG_FILES([src/vm.vala], [chmod a-w src/vm.vala])
-AC_CONFIG_FILES([src/wrennull.c], [chmod a-w src/wrennull.c])
 
 dnl pkg-config files: name them after the Wren version
 AC_CONFIG_FILES([src/libwren-vala-"${APIVER}".pc:src/libwren-vala.pc.in], [], [APIVER=$APIVER])

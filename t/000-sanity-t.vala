@@ -1,7 +1,11 @@
 // t/000-sanity-t.vala
 
+using Wren;
+
 void test_sanity()
 {
+  debug("Wren API version %s, wren-vala version %s",
+    Wren.APIVER(), Wren.VERSION());
   assert_true(true);
 }
 

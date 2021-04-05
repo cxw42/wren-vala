@@ -1,7 +1,5 @@
-// @configure_input@
-
 // vm.vala: Vala bindings for WrenVM
-// See @WREN_HEADER@ for documentation.
+// See wren-pkg/wren/src/include/wren.h for documentation.
 //
 // By Christopher White <cxwembedded@gmail.com>
 // Copyright (c) 2021 Christopher White.  All rights reserved.
@@ -9,7 +7,7 @@
 //
 // TODO: check the ownership on Handle instances.
 
-[CCode(cheader_filename="libwren-vala-@APIVER@.h,@WREN_HEADER@")]
+[CCode(cheader_filename="wren-vala-merged.h")]
 namespace Wren {
 
   /**
@@ -17,7 +15,7 @@ namespace Wren {
    *
    * Use this instead of a bare Handle whenever possible.
    */
-  [CCode(cheader_filename="libwren-vala-@APIVER@.h,@WREN_HEADER@")]
+  [CCode(cheader_filename="wren-vala-merged.h")]
   public class HandleV
   {
     private VMV vm;
@@ -113,7 +111,7 @@ namespace Wren {
    * functions, e.g., call(), use Wren.HandleV arguments.  This is so the
    * default use of Handles is consistent with Vala memory management.
    */
-  [CCode(cheader_filename="libwren-vala-@APIVER@.h,@WREN_HEADER@")]
+  [CCode(cheader_filename="wren-vala-merged.h")]
   public class VMV : Object
   {
     // --- Instance data ------------------------------------------
