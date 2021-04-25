@@ -26,30 +26,21 @@ After cloning:
 
 After doing one of the above "From" subsections:
 
-If you do not already have Wren installed, run
-`./configure --enable-wren-install && make -j && sudo make -j install`
+```
+./configure && make -j && sudo make -j install
+```
 
-After that, or if you do have Wren installed, run
-`./configure && make -j && sudo make -j install`.
+Wren is statically linked into wren-vala.
 
-Note that `make` will only build EITHER Wren OR `wren-vala`.  The default
-is `wren-vala`.  To build Wren itself, pass `--enable-wren-install` to
-`./configure`.  Yes, this is a bit odd, but it's the best I can think of
-at the moment! :)
-
-## After building from a Git repo
-
-The `wren-pkg/wren` submodule may be dirty.  To restore it to its clean state,
-run `make cleanwren`.  This will **remove** any files in `wren-pkg/wren` that
-are not checked in, so use this command carefully!
+Note: the version number of wren-vala matches the version of Wren in
+the first three digits.
 
 # Repo contents
 
 - `src/`: source code for the Vala bindings
 - `t/`: tests for the Vala bindings
 - `doc/`: documentation for the Vala bindings
-- `wren-pkg/`: Code to install wren to the system.  Only tested on Linux,
-  as of present.
+- `wren-pkg/`: Version of Wren that is statically linked into wren-vala
   - `wren-pkg/wren/`: [wren-lang/wren](https://github.com/wren-lang/wren),
     as a git submodule
 
@@ -58,6 +49,8 @@ are not checked in, so use this command carefully!
 - Code coverage of the test suite: run `./coverage.sh`, then open
   `wren-vala-coverage/index.html` in a Web browser.  Requires gcov(1) and
   lcov(1).
+  - Note: You can't run `make distcheck` if you're configured for
+    coverage.  Just re-run `./configure` to go back to non-coverage mode.
 - Documentation: run `make html`, then open `doc/valadoc/index.html` in a
   Web browser.
 

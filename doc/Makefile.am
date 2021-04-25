@@ -17,10 +17,7 @@ valadoc:
 	$(AM_V_GEN)valadoc -o valadoc -b $(top_srcdir)/src --verbose --force \
 		--package-name='@PACKAGE_TARNAME@' \
 		--package-version='@PACKAGE_VERSION@' \
-		$(top_srcdir)/src/basics.vapi \
-		$(top_srcdir)/src/marshal.vala \
-		$(top_srcdir)/src/trampoline.vala \
-		$(top_srcdir)/src/vm.vala \
+		$(vala_all_sources) \
 		--doclet=html \
 		$(MY_VALA_PKGS) \
 		$(EOL)

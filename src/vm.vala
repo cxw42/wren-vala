@@ -1,7 +1,5 @@
-// @configure_input@
-
 // vm.vala: Vala bindings for WrenVM
-// See @WREN_HEADER@ for documentation.
+// See wren-pkg/wren/src/include/wren.h for documentation.
 //
 // By Christopher White <cxwembedded@gmail.com>
 // Copyright (c) 2021 Christopher White.  All rights reserved.
@@ -9,7 +7,7 @@
 //
 // TODO: check the ownership on Handle instances.
 
-[CCode(cheader_filename="libwren-vala-@APIVER@.h,@WREN_HEADER@")]
+[CCode(cheader_filename="wren-vala-merged.h")]
 namespace Wren {
 
   /**
@@ -17,7 +15,7 @@ namespace Wren {
    *
    * Use this instead of a bare Handle whenever possible.
    */
-  [CCode(cheader_filename="libwren-vala-@APIVER@.h,@WREN_HEADER@")]
+  [CCode(cheader_filename="wren-vala-merged.h")]
   public class HandleV
   {
     private VMV vm;
@@ -90,7 +88,7 @@ namespace Wren {
     public delegate void MethodImpl(GLib.Object self, VMV vm);
 
     /**
-     * Fill a hash table with a map from {@link Wren.Tramp.hash_key} to
+     * Fill a hash table with a map from function signature to
      * {@link Wren.HasMethods.MethodImpl}.
      *
      * Must be callable multiple times, returning the same value every time.
@@ -113,7 +111,7 @@ namespace Wren {
    * functions, e.g., call(), use Wren.HandleV arguments.  This is so the
    * default use of Handles is consistent with Vala memory management.
    */
-  [CCode(cheader_filename="libwren-vala-@APIVER@.h,@WREN_HEADER@")]
+  [CCode(cheader_filename="wren-vala-merged.h")]
   public class VMV : Object
   {
     // --- Instance data ------------------------------------------
@@ -122,12 +120,16 @@ namespace Wren {
     private VM vm = null;
 
     /**
-     * Trampolines
+     * Public getter for the wrapped VM
      *
-     * Has to be public, but if you use it, your bindings will break!
+     * Use with caution!
      */
-    [CCode(notify = false)]
-    public Tramp tramp_ { get; private set; default = new Tramp(); }
+    public unowned VM raw_vm() {
+      return vm;
+    }
+
+    /** Trampolines */
+    private Tramp tramp_ = new Tramp();
 
     // --- VM functions -------------------------------------------
 
@@ -137,16 +139,16 @@ namespace Wren {
       var self = vm.GetUserData() as VMV;
       debug("bindForeignClass %s in %p\n",
         Tramp.hash_key(module, className), self);
-      return self.tramp_.get_functions(module, className);
+      return self.tramp_.get_class_methods(module, className);
     }
 
     /** Bind a foreign method */
-    private static ForeignMethodFn bindForeignMethod(VM vm, string module,
+    private static BindForeignMethodResult bindForeignMethod(VM vm, string module,
       string className, bool isStatic, string signature)
     {
       var self = vm.GetUserData() as VMV;
       debug("bindForeignMethod %s in %p\n",
-        Tramp.hash_key(module, className, isStatic, signature), self);
+        Tramp.hash_key(module, className, make_sig(isStatic, signature)), self);
       return self.tramp_.get_method(module, className, isStatic, signature);
     }
 
@@ -381,52 +383,62 @@ namespace Wren {
     // --- High-level interface -----------------------------------
     // This section binds classes as a whole between Vala and Wren
 
-#if 0
     /**
      * Get a slot as a GValue
      */
     public Value get_slot(int slot)
+    throws Marshal.Error
     {
-      // TODO
-      return Value(GLib.Type.INVALID);
+      return Marshal.value_from_slot(vm, slot);
     }
-#endif
 
     /**
-     * Expose class T to Wren, as part of module `mod`
+     * Wrap Wren slots in a GValue array.
      *
-     * @param mod The module to add the class to (default "main").
+     * @param first_slot  The first slot to grab (default 0)
+     * @param num_slots   How many slots to grab (default -1 == the whole
+     *                    slot array)
+     * @return An array of freshly-created GValues.
      */
-    public InterpretResult expose_class<T>(string mod = "main")
+    public Value[] get_slots(int first_slot = 0, int num_slots = -1)
+    throws Marshal.Error
     {
-      StringBuilder wren = new StringBuilder(); // source to be interpreted
-      var type = typeof(T);
+      return Marshal.values_from_slots(vm, first_slot, num_slots);
+    }
+
+    /**
+     * Set a slot to a GValue
+     *
+     * @param slot  Slot to set
+     * @param val   New value
+     */
+    public void set_slot(int slot, Value val)
+    throws Marshal.Error
+    {
+      Marshal.slot_from_value(vm, slot, val);
+    }
+
+    /**
+     * Expose class `type` to Wren, as part of module `mod`
+     *
+     * @param type  The type of the class to add
+     * @param mod   The module to add the class to (default "main").
+     */
+    public InterpretResult expose_class(GLib.Type type, string mod = "main")
+    {
       assert(!type.is_abstract()); // TODO more sophisticated error handling
       assert(type.is_instantiatable());
 
-      // ObjectClass ocl = (ObjectClass)type.class_ref();
+      var wren_source = tramp_.add_type(mod, type.name(), type);
+      if(wren_source == "") { // the second time we were called for the same class
+        debug("Already implemented");
+        return SUCCESS;
+      }
 
-      wren.append_printf("foreign class %s {\n", type.name());
+      debug("Wren source: >>%s<<", wren_source);
 
-      // Properties
-      // foreach (ParamSpec spec in ocl.list_properties()) {
-      // TODO print ("%s\n", spec.get_name ());
-      // }
-
-      wren.append("construct new() {}\n");
-
-      // Functions
-      Tramp.foreach_method_of_type(type, (k,v) => {
-        wren.append(Tramp.foreign_decl_for_key(k) + "\n");
-      });
-
-      wren.append("}\n");
-      debug("Wren source: >>%s<<", wren.str);
-
-      tramp_.add_type(mod, type.name(), type);
-
-      return interpret(mod, wren.str);
-    }
+      return interpret(mod, wren_source);
+    } // expose_class()
 
   } // class VMV
 } // namespace Wren

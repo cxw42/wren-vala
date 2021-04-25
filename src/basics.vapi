@@ -1,5 +1,3 @@
-// @configure_input@
-
 // basics.vapi: Vala bindings for Wren.
 // Documentation is taken from wren.h (license below).  This file is in the
 // same order as wren.h, as of writing.
@@ -10,7 +8,7 @@
 //
 // TODO: check the ownership on Handle instances.
 
-[CCode(cheader_filename = "@WREN_HEADER@", lower_case_cprefix="wren")]
+[CCode(cheader_filename = "wren-vala-merged.h", lower_case_cprefix="wren")]
 namespace Wren {
 
   [CCode(cname="WREN_VERSION_MAJOR")]
@@ -33,10 +31,10 @@ namespace Wren {
   public delegate void *ReallocateFn(void *memory, size_t newSize);
 
   [CCode(has_target = false)]
-  public delegate void ForeignMethodFn(VM vm);
+  public delegate void ForeignMethodFn(VM vm, void *userData);
 
   [CCode(has_target = false)]
-  public delegate void FinalizerFn(void *data);
+  public delegate void FinalizerFn(void *data, void *userData);
 
   [CCode(has_target = false)]
   public delegate string ResolveModuleFn(VM vm, string importer, string name);
@@ -55,8 +53,15 @@ namespace Wren {
   [CCode(has_target = false)]
   public delegate LoadModuleResult LoadModuleFn(VM vm, string name);
 
+  [SimpleType]
+  public struct BindForeignMethodResult
+  {
+    ForeignMethodFn executeFn;
+    void* userData;
+  }
+
   [CCode(has_target = false)]
-  public delegate ForeignMethodFn BindForeignMethodFn(VM vm, string module,
+  public delegate BindForeignMethodResult BindForeignMethodFn(VM vm, string module,
     string className,
     bool isStatic,
     string signature);
@@ -102,7 +107,9 @@ namespace Wren {
   public struct ForeignClassMethods
   {
     ForeignMethodFn allocate;
+    void *allocateUserData;
     FinalizerFn finalize;
+    void *finalizeUserData;
   }
 
   [CCode(has_target = false)]
@@ -152,7 +159,7 @@ namespace Wren {
    *
    * This class includes all functions taking a WrenVM as the first parameter.
    */
-  [CCode(cheader_filename = "@WREN_HEADER@", free_function = "wrenFreeVM",
+  [CCode(cheader_filename = "wren-vala-merged.h", free_function = "wrenFreeVM",
     has_type_id = false, cprefix="wren", lower_case_cprefix="wren")]
   [Compact]
   public class VM

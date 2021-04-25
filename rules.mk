@@ -17,6 +17,19 @@ vapidir = $(datadir)/vala/vapi
 
 # === Variables =========================================================
 
+vala_all_sources = \
+	$(top_srcdir)/src/basics.vapi \
+	$(top_srcdir)/src/marshal.vala \
+	$(top_srcdir)/src/trampoline.vala \
+	$(top_srcdir)/src/util.vala \
+	$(top_srcdir)/src/vm.vala \
+	$(EOL)
+
+c_all_sources = \
+	$(top_srcdir)/src/myconfig.c \
+	$(top_srcdir)/src/shim.c \
+	$(EOL)
+
 # Vala settings.
 # - LOCAL_VALA_FLAGS is filled in by each Makefile.am with any other valac
 #   options that Makefile.am needs.
@@ -35,7 +48,12 @@ MY_VALA_PKGS = \
 
 # C settings, which are the same throughout.  LOCAL_CFLAGS is filled in
 # by each Makefile.am.
-AM_CFLAGS = $(LOCAL_CFLAGS) $(BASE_CFLAGS) $(CODE_COVERAGE_CFLAGS)
+AM_CFLAGS = \
+	-I$(top_srcdir)/wren-pkg -I$(top_builddir)/wren-pkg \
+	$(LOCAL_CFLAGS) $(BASE_CFLAGS) \
+	$(CODE_COVERAGE_CFLAGS) \
+	$(EOL)
+
 AM_CPPFLAGS = $(CODE_COVERAGE_CPPFLAGS)
 
 # Libs.  $(LOCAL_LIBS) is added to $(LIBS) in configure.ac.

@@ -29,12 +29,9 @@ distcheck-hook:
 phony += prettyprint
 prettyprint:
 	-$(AM_V_GEN)uncrustify -l VALA -c $(top_srcdir)/.uncrustifyrc --replace \
-		src/basics.vapi.in \
-		src/marshal.vala.in \
-		src/trampoline.vala.in \
-		src/vm.vala.in \
-		src/wrennull.c.in \
+		$(vala_all_sources) \
 		t/000-sanity-t.vala \
+		t/090-util-t.vala \
 		t/105-tramp-t.vala \
 		t/100-vmv-t.vala \
 		t/110-hello-world-s.vala \
@@ -43,11 +40,15 @@ prettyprint:
 		t/140-roundtrip-data-t.vala \
 		t/150-marshal-t.vala \
 		t/200-expose-class-t.vala \
+		t/210-marshal-class-t.vala \
+		$(EOL)
+	-$(AM_V_GEN)uncrustify -c $(top_srcdir)/.uncrustifyrc --replace \
+		$(c_all_sources) \
 		$(EOL)
 
 phony += p
 p: prettyprint
-	-ctags -R
+	-ctags -R --exclude='doc/*' --exclude='wren-vala-coverage/*'
 
 phony += cleanwren
 cleanwren:
