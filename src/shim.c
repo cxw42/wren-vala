@@ -1,4 +1,8 @@
-// wrennull.c: Wren's null type, as a GType
+// shim.c: wren-vala routines that are easier to implement in C
+//
+// Currently contains:
+// - A GType representing Wren's null type
+// - Object** manipulation
 //
 // By Christopher White <cxwembedded@gmail.com>
 // Copyright (c) 2021 Christopher White.  All Rights Reserved.
@@ -15,15 +19,18 @@ G_BEGIN_DECLS
 static void value_nop(GValue *v)
 {
 }
+
 static void value_nop2(const GValue *s, GValue *d)
 {
 }
+
 static gchar *value_collect_nop(GValue *value, guint n_collect_values,
   GTypeCValue *collect_values,
   guint collect_flags)
 {
   return (gchar *)NULL;
 }
+
 static gchar *value_collect_nop_const(const GValue *value, guint n_collect_values,
   GTypeCValue *collect_values,
   guint collect_flags)
@@ -91,6 +98,21 @@ wrenget_null_type()
     g_once_init_leave(&wrennull_type_id__volatile, wrennull_type_id);
   }
   return wrennull_type_id__volatile;
+}
+
+/**
+ * wrenobj_from_ppobj:
+ * @ppobj: (transfer none): A GObject**, as a void*
+ *
+ * Does not touch the refcount of **ppobj.  This exists because it was faster
+ * to write this function than to debug the compile-time errors I was getting
+ * when I tried to do the same in Vala! :)
+ *
+ * Return: (transfer none): A GObject*
+ */
+GObject *wrenobj_from_ppobj(void *ppobj)
+{
+  return *(GObject **)ppobj;
 }
 
 G_END_DECLS

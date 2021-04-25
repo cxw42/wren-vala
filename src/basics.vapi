@@ -31,10 +31,10 @@ namespace Wren {
   public delegate void *ReallocateFn(void *memory, size_t newSize);
 
   [CCode(has_target = false)]
-  public delegate void ForeignMethodFn(VM vm);
+  public delegate void ForeignMethodFn(VM vm, void *userData);
 
   [CCode(has_target = false)]
-  public delegate void FinalizerFn(void *data);
+  public delegate void FinalizerFn(void *data, void *userData);
 
   [CCode(has_target = false)]
   public delegate string ResolveModuleFn(VM vm, string importer, string name);
@@ -53,8 +53,15 @@ namespace Wren {
   [CCode(has_target = false)]
   public delegate LoadModuleResult LoadModuleFn(VM vm, string name);
 
+  [SimpleType]
+  public struct BindForeignMethodResult
+  {
+    ForeignMethodFn executeFn;
+    void* userData;
+  }
+
   [CCode(has_target = false)]
-  public delegate ForeignMethodFn BindForeignMethodFn(VM vm, string module,
+  public delegate BindForeignMethodResult BindForeignMethodFn(VM vm, string module,
     string className,
     bool isStatic,
     string signature);

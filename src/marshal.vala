@@ -13,9 +13,16 @@ namespace Wren {
    * We use this because you can't create {@link GLib.Value}s of
    * {@link GLib.Type.NONE}.
    *
-   * In wrennull.c.
+   * Defined in shim.c.
    */
   public extern GLib.Type get_null_type();
+
+  /**
+   * Convert GObject** to GObject*
+   *
+   * Defined in shim.c.
+   */
+  private extern unowned Object obj_from_ppobj(void *ppobj);
 
   /**
    * Initialize the Wren Vala bindings.
@@ -27,7 +34,7 @@ namespace Wren {
    */
   public void static_init()
   {
-    if(!static_init_done) {
+    if(static_init_done) {
       return;
     }
 
@@ -44,22 +51,34 @@ namespace Wren {
   [CCode(cheader_filename="wren-vala-merged.h")]
   namespace Marshal {
 
-    public errordomain MarshalError {
+    public errordomain Error {
       /** Slot or other item not found */
       ENOENT,
+      /** Unknown type, or type I can't handle */
+      ENOTSUP,
+      /** Forbidden by the language (can't be fixed by a wren-vala change) */
+      EINVAL,
     }
 
+    // === Wren -> Vala =============================================
+
     /**
-     * Wrap a single Wren slot in a GValue.
+     * Get a GLib.Value from a single Wren slot.
      *
      * The mapping is:
-     * * Wren BOOL -> GLib.Type.BOOLEAN
-     * * Wren NULL -> GLib.Type.NONE
+     *
+     *  * Wren BOOL -> GLib.Type.BOOLEAN
+     *  * Wren NUM -> double
+     *  * Wren FOREIGN -> GLib.Object (this assumes you don't create any
+     *    objects using something other than wren-vala)
+     *  * Wren STRING -> string
+     *  * Wren NULL -> Wren.get_null_type()
      *
      * @param vm          The vm to read from
      * @param slot        The slot to grab.  It must exist.
      */
-    public Value to_value_raw(Wren.VM vm, int slot)
+    public Value value_from_slot(Wren.VM vm, int slot)
+    throws Marshal.Error
     {
       var ty = vm.GetSlotType(slot);
 
@@ -69,8 +88,10 @@ namespace Wren {
       case NUM:
         return vm.GetSlotDouble(slot);
       case FOREIGN:
-        // TODO
-        break;
+        var retval = Value(GLib.Type.OBJECT);
+        var obj = obj_from_ppobj(vm.GetSlotForeign(slot));
+        retval.set_object(obj); // adds a ref
+        return retval;
       case LIST:
         // TODO
         break;
@@ -85,11 +106,12 @@ namespace Wren {
         // TODO
         break;
       default:
-        assert_not_reached();
+        break;
       }
 
-      return Value(GLib.Type.INVALID);
-    }
+      throw new Marshal.Error.ENOTSUP(
+              "I don't know how to send type Wren %s to Vala".printf(ty.to_string()));
+    } // value_from_slot
 
     /**
      * Wrap Wren slots in a GValue array.
@@ -100,15 +122,15 @@ namespace Wren {
      *                    slot array)
      * @return An array of freshly-created GValues.
      */
-    public Value[] to_values_raw(Wren.VM vm, int first_slot = 0, int num_slots = -1)
-    throws MarshalError
+    public Value[] values_from_slots(Wren.VM vm, int first_slot = 0, int num_slots = -1)
+    throws Marshal.Error
     {
       if(num_slots == -1) {
         num_slots = vm.GetSlotCount();
       }
 
-      if(first_slot + num_slots >= vm.GetSlotCount()) {
-        throw new MarshalError.ENOENT(
+      if(first_slot + num_slots > vm.GetSlotCount()) {
+        throw new Marshal.Error.ENOENT(
                 "Slots up to %d requested, but only %d are available".printf(
                   first_slot + num_slots, vm.GetSlotCount()));
       }
@@ -116,10 +138,76 @@ namespace Wren {
       Value[] retval = new Value[num_slots];
       for(int i=0; i<num_slots; ++i) {
         int curr_slot = first_slot + i;
-        retval[i] = to_value_raw(vm, curr_slot);
+        retval[i] = value_from_slot(vm, curr_slot);
       }
 
       return retval;
-    }
-  }
+    } // values_from_slots()
+
+    // === Vala -> Wren =============================================
+
+    /**
+     * Fill a Wren slot from a GValue.
+     *
+     *  * Bool, number, and string are passed straight through.
+     *  * Object is invalid --- there's no way to load an instance
+     *    you didn't create in Wren.
+     *
+     * @param vm    The VM
+     * @param slot  Slot to set
+     * @param val   New value
+     */
+    public void slot_from_value(Wren.VM vm, int slot, Value val)
+    throws Marshal.Error
+    {
+      var vty = val.type();
+
+      if(vty == get_null_type()) {
+        // Outside the switch because it's not a compile-time constant
+        vm.SetSlotNull(slot);
+        return;
+      }
+
+      switch(vty) {
+      case GLib.Type.BOOLEAN:
+        vm.SetSlotBool(slot, val.get_boolean());
+        return;
+      case GLib.Type.DOUBLE:
+      case GLib.Type.FLOAT:
+      case GLib.Type.INT:
+      case GLib.Type.INT64:
+      case GLib.Type.LONG:
+      case GLib.Type.UINT:
+      case GLib.Type.UINT64:
+      case GLib.Type.ULONG:
+        var dblval = Value(GLib.Type.DOUBLE);
+        val.transform(ref dblval);
+        vm.SetSlotDouble(slot, dblval.get_double());
+        return;
+      // FOREIGN: handled below
+      // case LIST:
+      //  // TODO
+      //  break;
+      // case MAP:
+      //  // TODO
+      //  break;
+      case GLib.Type.STRING:
+        vm.SetSlotString(slot, val.get_string());
+        return;
+      // case UNKNOWN:
+      //  // TODO
+      //  break;
+      default:
+        if(vty.is_object()) {
+          throw new Marshal.Error.EINVAL("Cannot send Object instances to Wren");
+        }
+        break;
+      }
+
+      throw new Marshal.Error.ENOTSUP(
+              "I don't know how to send Vala type %s to Wren".printf(vty.to_string()));
+    } // set_slot()
+
+  } // namespace Marshal
+
 } // namespace Wren

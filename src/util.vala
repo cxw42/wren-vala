@@ -27,10 +27,9 @@ namespace Wren {
         var ident = "(?:[A-Za-z_][A-Za-z_0-9]*)";
         fdf_re_ = new Regex(
           "^(?<leadtext>(?:static\\s+)?%s)(?<rest>.*)$".printf(ident));
-      } catch(RegexError e) {
-        debug("Could not create regex for %s(): %s", GLib.Log.METHOD, e.message);
-        assert(false);  // I can't go on
-      }
+      } catch(RegexError e) { // LCOV_EXCL_START - unreached if tests pass
+        error("Could not create regex for %s(): %s", GLib.Log.METHOD, e.message);
+      } // LCOV_EXCL_STOP
     }
 
     MatchInfo matches;

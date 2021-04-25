@@ -30,10 +30,18 @@ LOCAL_VALA_FLAGS = \
 	--pkg libwren-vala-@APIVER@ \
 	$(EOL)
 
+# XXX: the json-glib is just for serializing values when debugging
+# --pkg json-glib-1.0
+
 LOCAL_CFLAGS = \
 	-I $(top_srcdir)/src \
 	-I $(top_builddir)/src \
 	$(EOL)
+# XXX $(shell pkg-config --cflags json-glib-1.0)
+
+AM_LDFLAGS = \
+	$(EOL)
+# XXX $(shell pkg-config --libs json-glib-1.0)
 
 # Libs: -lwren is in LIBS, which is included by default.
 LDADD = \
@@ -43,8 +51,10 @@ LDADD = \
 
 # --- Test definitions ---
 
+# When you add files here, also add them to the list in the `prettyprint` target
 test_programs += \
 	000-sanity-t \
+	090-util-t \
 	100-vmv-t \
 	105-tramp-t \
 	120-read-var-from-wren-t \
@@ -52,14 +62,17 @@ test_programs += \
 	140-roundtrip-data-t \
 	150-marshal-t \
 	200-expose-class-t \
+	210-marshal-class-t \
 	$(EOL)
 
 dist_test_scripts += \
 	110-hello-world-t.sh \
+	160-error-t.sh
 	$(EOL)
 
 test_extra_programs += \
 	110-hello-world-s \
+	160-error-s \
 	$(EOL)
 
 dist_test_extra_scripts += \

@@ -26,7 +26,7 @@ DISTCLEANFILES += $(pkgconfig_DATA)
 
 # === Library, pass 1 ===
 # The Vala files, as a convenience library.  This is to get the ordering
-# right with respect to wrennull.c.
+# right with respect to shim.c.
 
 noinst_LTLIBRARIES += libinternal.la
 
@@ -42,7 +42,7 @@ libinternal_la_SOURCES = \
 libinternal_stamp = $(srcdir)/libinternal_la_vala.stamp
 
 # Make libinternal get built first.  That way $(generated_header) will exist
-# when it's time to build wrennull.c.
+# when it's time to build shim.c.
 BUILT_SOURCES += $(libinternal_stamp)
 
 generated_header = $(srcdir)/wren-vala-generated.h

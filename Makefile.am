@@ -40,6 +40,7 @@ prettyprint:
 		t/140-roundtrip-data-t.vala \
 		t/150-marshal-t.vala \
 		t/200-expose-class-t.vala \
+		t/210-marshal-class-t.vala \
 		$(EOL)
 	-$(AM_V_GEN)uncrustify -c $(top_srcdir)/.uncrustifyrc --replace \
 		$(c_all_sources) \
