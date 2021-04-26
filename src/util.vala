@@ -13,6 +13,8 @@ namespace Wren {
   public extern string APIVER();
   /** The wren-vala version */
   public extern string VERSION();
+  public extern string PACKAGE_STRING();
+  public extern string PACKAGE_URL();
 
   // === Defined in this file ===
 

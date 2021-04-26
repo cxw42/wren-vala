@@ -5,6 +5,7 @@
 # Test executables
 *-t
 *-s
+/repl
 
 # Generated files
 *.c

@@ -4,10 +4,15 @@
 include $(top_srcdir)/rules.mk
 include $(top_srcdir)/glib-tap.mk
 
+all_local =
+all-local: $(all_local)
+
 EXTRA_DIST += .gitignore
 
 phony += build-tests
 build-tests: $(check_PROGRAMS)
+
+# === Tests =============================================================
 
 # Tests themselves: executables ending in -t, and scripts ending in -t.sh
 test_programs =
@@ -79,5 +84,22 @@ dist_test_extra_scripts += \
 	bash-test-utils-s.sh \
 	$(EOL)
 
-# Make sure common.sh gets remade if necessary before running tests
-all-local: common.sh
+# Make sure common.sh gets remade if necessary before running tests.
+all_local += common.sh
+
+# === REPL ==============================================================
+all_local += repl
+noinst_PROGRAMS += repl
+
+repl_SOURCES = \
+	repl.vala \
+	linenoise/linenoise.c \
+	linenoise/linenoise.h \
+	linenoise/utf8.c \
+	linenoise/utf8.h \
+	$(EOL)
+
+EXTRA_DIST += \
+	linenoise/LICENSE \
+	linenoise/README.markdown \
+	$(EOL)
