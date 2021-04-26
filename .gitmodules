@@ -2,3 +2,6 @@
 	branch = wren-vala-2
 	path = wren-pkg/wren
 	url = https://github.com/cxw42/wren.git
+[submodule "t/linenoise"]
+	path = t/linenoise
+	url = https://github.com/cxw42/linenoise
