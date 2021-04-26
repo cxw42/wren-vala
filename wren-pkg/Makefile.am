@@ -48,6 +48,11 @@ libwren_@APIVER@_la_SOURCES = \
 	wren/src/vm/wren_value.h \
 	wren/src/vm/wren_vm.c \
 	wren/src/vm/wren_vm.h \
+	$(EOL)
+
+# --- Meta and Random ---
+
+EXTRA_libwren_@APIVER@_la_SOURCES = \
 	wren/src/optional/wren_opt_meta.c \
 	wren/src/optional/wren_opt_meta.h \
 	wren/src/optional/wren_opt_meta.wren.inc \
@@ -56,6 +61,26 @@ libwren_@APIVER@_la_SOURCES = \
 	wren/src/optional/wren_opt_random.wren.inc \
 	$(EOL)
 
+if USE_WREN_META
+libwren_@APIVER@_la_SOURCES += \
+	wren/src/optional/wren_opt_meta.c \
+	wren/src/optional/wren_opt_meta.h \
+	wren/src/optional/wren_opt_meta.wren.inc \
+	$(EOL)
+else
+libwren_@APIVER@_la_CFLAGS += -DWREN_OPT_META=0
+endif
+
+if USE_WREN_RANDOM
+libwren_@APIVER@_la_SOURCES += \
+	wren/src/optional/wren_opt_random.c \
+	wren/src/optional/wren_opt_random.h \
+	wren/src/optional/wren_opt_random.wren.inc \
+	$(EOL)
+else
+libwren_@APIVER@_la_CFLAGS += -DWREN_OPT_RANDOM=0
+endif
+
 # === Other Wren files ==================================================
 
 EXTRA_DIST += \
@@ -63,4 +88,6 @@ EXTRA_DIST += \
 	wren/CHANGELOG.md \
 	wren/LICENSE \
 	wren/README.md \
+	wren/src/optional/wren_opt_meta.wren \
+	wren/src/optional/wren_opt_random.wren \
 	$(EOL)

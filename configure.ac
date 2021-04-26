@@ -8,7 +8,7 @@ dnl === Basic setup =======================================================
 dnl Note: the version number of this package matches the version of Wren in
 dnl the first three digits.
 AC_INIT([Vala bindings for Wren],
-  [0.4.0.1],
+  [0.4.0.2],
   [https://github.com/cxw42/wren-vala/issues], [wren-vala],
   [https://github.com/cxw42/wren-vala])
 
@@ -68,6 +68,16 @@ AC_SEARCH_LIBS([log2], [m],
     AC_MSG_WARN([Could not find -lm, which Wren requires])
   ]
 )
+
+dnl Wren class Meta (default disabled)
+AC_ARG_ENABLE([meta],
+  AS_HELP_STRING([--enable-meta], [Enable the Wren "Meta" class (default disabled)]))
+AM_CONDITIONAL([USE_WREN_META], [test "x$enable_meta" = "xyes"])
+
+dnl Wren class Random (default enabled)
+AC_ARG_ENABLE([random],
+  AS_HELP_STRING([--disable-random], [Disable the Wren "Random" class (default enabled)]))
+AM_CONDITIONAL([USE_WREN_RANDOM], [test "x$enable_random" != "xno"])
 
 dnl === Code coverage =====================================================
 
