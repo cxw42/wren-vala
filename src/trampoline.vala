@@ -137,8 +137,8 @@ namespace Wren {
           &retval.executeFn, retval.userData);
 
       } else {
-        // TODO better error handling
-        error("No foreign-method implementation or foreign property found for key %s", key);
+        debug("No foreign-method implementation or foreign property found for key %s", key);
+        // But it might be Meta or Random, so let the call continue.
       }
 
       return retval;
