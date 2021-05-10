@@ -42,44 +42,62 @@ void test_from_wren()
     vm.EnsureSlots(2);
     vm.GetVariable("main", "listfromwren", 0);
 
-    // Check Wren's view of the list as well as Marshal's view
     {
+      // Check Wren's view of the list
       Wren.Type types[] = { Wren.Type.NUM, Wren.Type.STRING, Wren.Type.BOOL };
       Value values[] = { 1.0, "yes", true };
       assert_cmpuint(vm.GetSlotType(0), EQ, Wren.Type.LIST);
       assert_cmpint(vm.GetListCount(0), EQ, 3);
+
+      // In parallel, check Marshal's view of the list
+      var wrapped_arr = Marshal.value_from_slot(vm, 0);
+      assert_true(wrapped_arr.type() == typeof(GLib.ValueArray));
+      unowned ValueArray arr = (ValueArray)wrapped_arr.get_boxed();
+      assert_cmpuint(arr.n_values, EQ, 3);
+
       for(int i = 0; i < vm.GetListCount(0); ++i) {
         vm.GetListElement(0, i, 1); // slot 1 := (slot 0)[i]
         assert_cmpuint(vm.GetSlotType(1), EQ, types[i]);
         var val = Marshal.value_from_slot(vm, 1);
 
+        // Loop twice so I don't have to duplicate the checks below.
+        // First time through check's Wren's view; second time checks
+        // Marshal's view.
+        for(int which=0; which<2; ++which) {
+
 #if 0
-        // XXX: the json-glib is just for serializing values when debugging
-        var node = new Json.Node(VALUE);
-        node.set_value(values[i]);
-        debug("%d: expected %s", i, Json.to_string(node, true));
-        node.set_value(val);
-        debug("%d:      got %s", i, Json.to_string(node, true));
+          // XXX: the json-glib is just for serializing values when debugging
+          var node = new Json.Node(VALUE);
+          node.set_value(values[i]);
+          debug("%d: expected %s", i, Json.to_string(node, true));
+          node.set_value(val);
+          debug("%d:      got %s", i, Json.to_string(node, true));
 #endif
 
-        // Note: == just checks for pointer equality, not equality
-        // of the contained values.  Do it brute-force.
-        switch(i) {
-        case 0:
-          assert_true(val.type() == GLib.Type.DOUBLE);
-          assert_cmpfloat(val.get_double(), EQ, values[0].get_double());
-          break;
-        case 1:
-          assert_true(val.type() == GLib.Type.STRING);
-          assert_cmpstr(val.get_string(), EQ, values[1].get_string());
-          break;
-        case 2:
-          assert_true(val.type() == GLib.Type.BOOLEAN);
-          assert_true(val.get_boolean() == values[2].get_boolean());
-          break;
-        default:
-          assert_not_reached(); // LCOV_EXCL_LINE
-        }
+          // Note: == just checks for pointer equality, not equality
+          // of the contained values.  Do it brute-force.
+          switch(i) {
+          case 0:
+            assert_true(val.type() == GLib.Type.DOUBLE);
+            assert_cmpfloat(val.get_double(), EQ, values[0].get_double());
+            break;
+          case 1:
+            assert_true(val.type() == GLib.Type.STRING);
+            assert_cmpstr(val.get_string(), EQ, values[1].get_string());
+            break;
+          case 2:
+            assert_true(val.type() == GLib.Type.BOOLEAN);
+            assert_true(val.get_boolean() == values[2].get_boolean());
+            break;
+          default:
+            assert_not_reached(); // LCOV_EXCL_LINE
+          }
+
+          val = arr.values[i];
+        } // next which
+      } // next i
+
+      for(int i=0; i<arr.n_values; ++i) {
       }
     } // lists
 

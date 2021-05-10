@@ -69,10 +69,18 @@ namespace Wren {
      *
      *  * Wren BOOL -> GLib.Type.BOOLEAN
      *  * Wren NUM -> double
-     *  * Wren FOREIGN -> GLib.Object (this assumes you don't create any
-     *    objects using something other than wren-vala)
+     *  * Wren FOREIGN -> GLib.Object (this assumes you don't create any objects using something other than wren-vala)
+     *  * Wren LIST -> GLib.ValueArray wrapped in a GLib.Value.  See note below.
      *  * Wren STRING -> string
      *  * Wren NULL -> Wren.get_null_type()
+     *
+     * Note on LIST types:  To get the array, you can use something like:
+     * {{{
+     * Value wrapped_arr = Marshal.value_from_slot(vm, list_slot_idx);
+     * // now wrapped_arr.type() == typeof(GLib.ValueArray)
+     * unowned ValueArray arr = (ValueArray)wrapped_arr.get_boxed();
+     * // now arr.n_values is the length of the list.
+     * }}}
      *
      * @param vm          The vm to read from
      * @param slot        The slot to grab.  It must exist.
@@ -92,12 +100,32 @@ namespace Wren {
         var obj = obj_from_ppobj(vm.GetSlotForeign(slot));
         retval.set_object(obj); // adds a ref
         return retval;
+
       case LIST:
-        // TODO
-        break;
+        // Make space for a temporary
+        int nslots = vm.GetSlotCount();
+        vm.EnsureSlots(nslots+1);   // now slot `nslots` is available
+
+        int nelems = vm.GetListCount(slot);
+        var arr = new ValueArray(nelems);
+        for(int i=0; i<nelems; ++i) {
+          vm.GetListElement(slot, i, nslots);
+          arr.append(value_from_slot(vm, nslots));
+        }
+
+        return arr;
+
       case MAP:
-        // TODO
+        // TODO --- not currently possible
+#if 0
+        // Make space for a temporary
+        int nslots = vm.GetSlotCount();
+        vm.EnsureSlots(nslots+1);   // now slot `nslots` is available
+
+        int nelems = vm.GetMapCount(slot);
+#endif
         break;
+
       case NULL:
         return Value(get_null_type());
       case STRING:
@@ -110,7 +138,7 @@ namespace Wren {
       }
 
       throw new Marshal.Error.ENOTSUP(
-              "I don't know how to send type Wren %s to Vala".printf(ty.to_string()));
+              "I don't know how to send Wren type %s to Vala".printf(ty.to_string()));
     } // value_from_slot
 
     /**
@@ -185,24 +213,40 @@ namespace Wren {
         vm.SetSlotDouble(slot, dblval.get_double());
         return;
       // FOREIGN: handled below
-      // case LIST:
-      //  // TODO
-      //  break;
+      // LIST: handled below
+
       // case MAP:
       //  // TODO
       //  break;
+
       case GLib.Type.STRING:
         vm.SetSlotString(slot, val.get_string());
         return;
-      // case UNKNOWN:
-      //  // TODO
-      //  break;
+
+      // UNKNOWN: ENOTSUP below (error)
+
       default:
-        if(vty.is_object()) {
+        if(vty.is_object()) { // FOREIGN
           throw new Marshal.Error.EINVAL("Cannot send Object instances to Wren");
-        }
+
+        } else if(vty == typeof(GLib.ValueArray)) { // LIST
+          // TODO write tests for this
+          unowned ValueArray arr = (ValueArray)val.get_boxed();
+
+          // Make space for a temporary
+          int nslots = vm.GetSlotCount();
+          vm.EnsureSlots(nslots+1);   // now slot `nslots` is available
+          vm.SetSlotNewList(slot);
+
+          for(int i=0; i<arr.n_values; ++i) {
+            slot_from_value(vm, nslots, arr.values[i]);
+            vm.SetListElement(slot, i, nslots);
+          }
+          return;
+        } // else continue to the `throw` at the end of the function.
+
         break;
-      }
+      } // switch(vty)
 
       throw new Marshal.Error.ENOTSUP(
               "I don't know how to send Vala type %s to Wren".printf(vty.to_string()));
